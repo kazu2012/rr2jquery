@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>rr2jquery</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<style type="text/css">
+html, body, button, input, select, textarea {	font-family:'Lucida Grande CY','Helvetica Neue',Arial,sans-serif;
+	}
+
+.bz-tooltip {background-color:#EEEEEE;border:4px solid #CCCCCC;right:2em;position:absolute;top:2em;}
+.bz-tooltip-head {background-color:#CCCCCC;height:1.3em;padding:0 1ex 4px;}
+.bz-tooltip-x {float:right;}
+.bz-tooltip-name {}
+.bz-tooltip-box {padding:1ex;}
+
+.b-video {display:inline-block;position:static;border-color: #C7DFEE}
+.b-video-head {background-color: #C7DFEE}
+
+.bz-bookmarklet {margin:1em 0;}
+.bz-bookmarklet-link {background-color:#B4FFC5;color:#000000;padding:1ex;text-decoration:none;}
+.bz-bookmarklet-link:hover {background-color:#96E8A8;}
+
+</style>
+
+
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="rr2jquery.js"></script>
+
+<!-- script src="http://wave-api.appspot.com/public/embed.js" type="text/javascript"></script -->
+<script type="text/javascript">
+	// setup
+	var tmpl={}, master = $.new_master(document, {
+		tmpl: tmpl
+		});
+
+
+
+	tmpl.tooltip = function(pr, _) {
+		var ns = this;
+
+		// ns.nodeType = -1;
+		// ns.node = HTMLElement_parent
+		// ns.box  = HTMLElement_box
+
+		ns.node = _('div.bz-tooltip', {css: pr.css}
+			, _('div.bz-tooltip-head', {css: pr.css ? pr.css+'-head' : ''}
+				//, _('span.bz-tooltip-x', "\u00d7")
+				, _('span.bz-tooltip-name'
+					, ns.name_text = _.text(pr.name)
+					)
+				)
+
+			, ns.box = _('div.bz-tooltip-box')
+			)
+		};
+	</script>
+
+
+
+<script type="text/javascript">
+
+	// demo 1
+	$(function() {
+		var _ = master;
+
+		_('body'
+			, _('tmpl:tooltip', {name: "(>_<)"}
+				, _('h1', {style:{color:'#f00'}}
+					, "Привет мир!!!"
+					)
+				)
+			);
+		});
+
+	// demo 2
+	$(function() {
+		var _ = master;
+
+		_('body'
+			, _('div.bz-bookmarklet'
+				, _('a.bz-bookmarklet-link'
+					, {
+						title: "bookmarklet HTML2Master, for firefox",
+						href: "javascript:void(function(tp,nt){var w=window.open('',null,'width=600,height=500,resizable=yes');if(!w)return;var d=w.document,s=d.createElement('script');s=d.createElement('script');s.charset='utf-8';s.type='text/javascript';s.defer='defer';var hs=location.hash;if(hs){hs=hs.indexOf('id:')==0?hs.substring(3):hs.indexOf('#id:')==0?hs.substring(4):false;hs=hs&&document.getElementById(hs);if(hs&&hs.nodeName=='IFRAME'){hs=hs.contentDocument;if(hs)hs=hs.body;}};w.elementScan=hs||document.body;w.typeMaster=tp;w.nullTextNode=nt?' ':null;w.scan_href=location.href;s.src='http://vflash.ru/rr2jquery/html2master.js';d.body.appendChild(s)})(1)"
+						}
+					, "bookmarklet HTML2Master"
+					)
+				)
+
+			)
+		});
+
+
+
+	// demo 3
+	$(function() {
+		var _ = master;
+
+
+		_('body'
+			, _('tmpl:tooltip', {css: 'b-video', name: "Big Buck Bunny"}
+				, $.createSWF({
+					src: "http://www.youtube.com/v/YE7VzlLtp-4&amp;hl=ru_RU&amp;fs=1"
+					, wmode: "opaque"
+					, width: "640"
+					, height: "385"
+					, allowfullscreen: "true"
+					})
+				)
+			);
+		});
+
+	// demo 4 Browser detect
+	$(function() {
+		var _ = master;
+
+		_('body'
+			, _('h3', {style:"margin: 2em 0pt 1ex;"}, "Browser detect")
+			, _('div.bz-browser', "($.IE) : "+$.IE)
+			, _('div.bz-browser', "(!$.IE) : "+(!$.IE))
+			, _('div.bz-browser', "($.IE < 8) : "+($.IE < 8))
+			, _('div.bz-browser', "($.IE > 6) : "+($.IE > 6))
+			, _('div.bz-browser', "($.IE == 6) : "+($.IE < 8))
+
+			, _('div.bz-browser', "($.Gecko) : "+$.Gecko)
+			, _('div.bz-browser', "($.Gecko > 1.91) : "+($.Gecko > 1.91))
+
+			, _('div.bz-browser', "($.Opera < 10.5) : "+($.Opera < 10.5))
+			, _('div.bz-browser', "($.Opera >= 10.5) : "+($.Opera >= 10.5))
+			, _('div.bz-browser', "($.Opera) : "+$.Opera)
+
+			, _('div.bz-browser', "($.WebKit) : "+$.WebKit)
+			, _('div.bz-browser', "($.WebKit > 500) : "+($.WebKit > 500))
+
+			, _('div.bz-browser', "($.Firefox >= 3.5) : "+($.Firefox >= 3.5))
+			, _('div.bz-browser', "($.Chrome < 6) : "+($.Chrome < 6))
+			, _('div.bz-browser', "($.Chrome) : "+($.Chrome))
+
+			, _('div.bz-browser', "($.WebKit && !$.Safary) : "+($.WebKit && !$.Safary))
+			, _('div.bz-browser', "($.Safari) : "+($.Safari))
+
+			, _('div.bz-browser', "($.SWF) : "+($.SWF))
+			, _('div.bz-browser', "($.SWF > 10) : "+($.SWF > 10))
+
+			, _('div.bz-browser', "($.osWin) : "+($.osWin))
+			, _('div.bz-browser', "($.osMac) : "+($.osMac))
+			, _('div.bz-browser', "($.osLnx) : "+($.osLnx))
+
+			, _('div.bz-browser', "($.is_mobile) : "+($.is_mobile))
+			, _('div.bz-browser', "($.is_j2me) : "+($.is_j2me))
+
+			)
+		});
+
+
+	//javascript:void(function(tp,nt){var w=window.open(null,null,'width=600,height=500,resizable=true');if(!w)return;var d=w.document,s=d.createElement('script');s=d.createElement('script');s.charset='utf-8';s.type='text/javascript';s.defer='defer';var hs=location.hash;if(hs){hs=hs.indexOf('id:')==0?hs.substring(3):hs.indexOf('#id:')==0?hs.substring(4):false;hs=hs&&document.getElementById(hs);if(hs&&hs.nodeName=='IFRAME'){hs=hs.contentDocument;if(hs)hs=hs.body;}};w.elementScan=hs||document.body;w.typeMaster=tp;w.nullTextNode=nt?' ':null;w.scan_href=location.href;s.src='http://vflash.ru/html2master.js';d.body.appendChild(s)})(2)
+
+	</script>
+
+
+</head>
+<body>
+
+</body>
+</html>
