@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>test</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<style type="text/css">
+html, body, button, input, select, textarea {
+	font-family:'Lucida Grande CY','Helvetica Neue',Arial,sans-serif;
+	}
+
+</style>
+
+
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="rr2jquery.js"></script>
+
+<!-- script src="http://wave-api.appspot.com/public/embed.js" type="text/javascript"></script -->
+<script type="text/javascript">
+	// setup
+	var tmpl={}, master = $.new_master(document, {
+		tmpl: tmpl
+		});
+
+
+
+var TT= {}
+
+TT.value= function( data ){
+    return function( ){
+        return data
+    }
+}
+
+TT.pipe= function( list ){
+    if( !list ) list= []
+    var len= list.length
+    if( len === 1 ) return list[0]
+    return function( data ){
+        for( var i= 0; i < len; ++i ) data= list[ i ]( data )
+        return data
+    }
+}
+
+TT.concater= function( list ){
+    var len= list.length
+    if( len === 1 ) return list[0]
+    return function( data ){
+        var res= []
+        for( var i= 0; i < len; ++i )
+            res[i]= list[ i ]( data )
+        return res.join( '' )
+    }
+}
+
+TT.template= new function( ){
+    var searcher= /((?:[^\{\}]|\{\{|\}\})*)(?:\{|$)|([^\{\}]*)\}/g
+    return function( str, filter ){
+        if( !filter ) filter= TT.pipe()
+        var parts= []
+        String( str ).replace
+        (    searcher
+        ,    function( str, val, sel ){
+                if( sel ){
+                    parts.push( function( data ){
+                        data= data[ sel ]
+                        switch( typeof data ){
+                            case 'undefined': return '{' + sel + '}'
+                            case 'function': return data()
+                            default: return filter( data )
+                        }
+                    })
+                } else if( val ){
+                    val= val.split( '{{' ).join( '{' ).split( '}}' ).join( '}' )
+                    parts.push( TT.value( val ) )
+                }
+            }
+        )
+        return TT.concater( parts )
+    }
+}
+
+TT.uri= function( tpl ){
+    return TT.template( tpl, TT.uri.encoder() )
+}
+TT.uri.encoder= TT.value( encodeURIComponent )
+TT.uri.decoder= TT.value( decodeURIComponent )
+
+TT.html= function( tpl ){
+    return TT.template( tpl, TT.html.encoder() )
+}
+TT.html.encoder= new function( ){
+    var parent= document.createElement('div')
+    var child= parent.appendChild( document.createTextNode( '' ) )
+    return TT.value( function( data ){
+        child.nodeValue= data
+        return parent.innerHTML.split( '"' ).join( '&quot;' ).split( "'" ).join( '&apos;' )
+    })
+}
+TT.html.decoder= new function( ){
+    var parent= document.createElement('div')
+    return TT.value( function( data ){
+        parent.innerHTML= data
+        return parent.firstChild.nodeValue
+    })
+}
+
+TT.dom= function( tpl ){
+    return TT.pipe([ TT.html( tpl ), TT.dom.parser() ])
+}
+TT.dom.parser= new function(){
+    var parent= document.createElement( 'div' )
+    return TT.value( function( html ){
+        parent.innerHTML= html
+        var childs= parent.childNodes
+        if( childs.length === 1 ) return childs[0]
+        var fragment= document.createDocumentFragment()
+        while( childs[0] ) fragment.appendChild( childs[0] )
+        return fragment
+    })
+}
+TT.dom.serializer= new function(){
+    var parent= document.createElement( 'div' )
+    var child= parent.appendChild( document.createTextNode( '' ) )
+    return TT.value( function( node ){
+        parent.replaceChild( node.cloneNode( true ), parent.firstChild )
+        return parent.innerHTML
+    })
+}
+
+	</script>
+
+
+
+<script type="text/javascript">
+
+tmpl.alerts_holder = function(pr, _){
+	var ns = this;
+
+	ns.node = _('DIV.futu_alerts_holder#futu_alerts_holder'
+		, _('DIV.futu_alert error', {style:"position: relative; top: 0pt; display: block;"}
+			, ns.node_name = _('DIV.futu_alert_header'
+				, _.text(pr.name||'')
+				)
+
+			, ns.node_text = _('DIV.futu_alert_text'
+				, _.text(pr.text||'')
+				)
+			)
+		)
+	};
+
+tmpl.alerts_holder_fast =  (function() {
+
+	var nx, d, mx;
+
+	function cmx(x){
+		var i, v; mx = {};
+		for(i in x) {
+			if (v = x[i] && x[i].className) mx[v] = i;
+			};
+		};
+
+	return function(pr, _) {
+		if (!nx || d !== _.document) {
+			//nx = new _.global.tmpl.rm-mtbox_row(false, _);
+			var x = new tmpl.alerts_holder(false, _);
+			if (!mx) cmx(x);
+
+			nx = x.node.cloneNode(true);
+			d = _.document;
+			return x;
+			};
+
+		this.node = nx.cloneNode(true);
+		var ns = this, a = ns.node.getElementsByTagName("*"), i = 0, n, v;
+		while(n = a[i++]) if (v = n.className) if (v = mx[v]) ns[v] = n;
+
+		n = ns.node_name;
+		ns.name = n.firstChild || n.appendChild(d.createTextNode(""));
+
+		n = ns.node_text;
+		ns.text = n.firstChild || n.appendChild(d.createTextNode(""));
+
+		ns.name.data = pr.name;
+		ns.text.data = pr.text;
+
+		return ns;
+		};
+	})()
+
+
+var tmplText = '<div class="futu_alerts_holder" id="futu_alerts_holder"><div style="position: relative; top: 0pt; display: block;" class="futu_alert error"><div class="futu_alert_header">{name}</div><div class="futu_alert_text">{text}</div></div></div>';
+
+var tmplTT = TT.dom(tmplText);
+$(function() {	var _  = master
+
+	function benchmark(fn, i, v) {
+		var t, r;
+
+		t = new Date().getTime();
+		while(i--) r = fn(v, 1, 2,3, 4, 5);
+		t = new Date().getTime()-t;
+
+		return [t, r];
+		};
+
+
+
+	//var node = document.createElement('div');
+	function test1() {		/*		return tmplTT({			name: '<<<Происшествие во время выборов',
+			text: '<<<У вас недостаточно заряда для голосования'
+			});
+		*/
+		return TT.dom(tmplText)({			name: 'Происшествие во время выборов',
+			text: 'У вас недостаточно заряда для голосования'
+			});
+
+		};
+
+	function test2() {
+		return master('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
+			name: 'Происшествие во время выборов',
+			text: 'У вас недостаточно заряда для голосования'
+			});
+		};
+
+
+	setTimeout(function(){
+		var n = 1000, t1, t2, r1, r2;
+
+		benchmark(test1, 10);
+		benchmark(test2, 10);
+
+
+		r1 = benchmark(test1, n);
+		r2 = benchmark(test2, n);
+
+
+		t1 = r1[0];
+		t2 = r2[0];
+
+		alert('test1: '+t1+"ms    test2: "+t2+"ms    test2/test1: "+(t1&&(t2/t1)));
+		}, 100)
+	});
+
+
+	</script>
+
+
+</head>
+<body>
+
+</body>
+</html>
