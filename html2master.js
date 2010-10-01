@@ -55,13 +55,13 @@ document.body.innerHTML = "";
 				if (!tx) {tx = "{"} else tx += ", ";
 
 				if (typeof v == 'number') {
-					tx += x+':'+v;
+					tx += x+': '+v;
 					}
 				else if (x == 'title' || x === 'value') {
-					tx += x+':"'+pEscape(v)+'"'
+					tx += x+': "'+pEscape(v)+'"'
 					}
 				else {
-					tx += x+":'"+pEscape(v)+"'"
+					tx += x+": '"+pEscape(v)+"'"
 					};
 				};
 			};
