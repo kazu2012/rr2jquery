@@ -363,6 +363,7 @@ jQuery.extend({
 
 		//c_.e = d.masterElement||rr.cr_(d);
 		c_.text = text;
+		c_.html = html;
 
 		c_.clone = clone;
 		c_.tmpl = tmpl;
@@ -375,6 +376,20 @@ jQuery.extend({
 
 	function text(x) {
 		return this.document.createTextNode(x || (x===0 ? 0 : ''))
+		};
+
+	var N2A; try {N2A = Array.prototype.slice.call(document.documentElement.childNodes) instanceof Array} catch (e) {};
+	function html(x) {
+		var n = this.nullNode || (this.nullNode = this.document.createElement('div')), a, i;
+		n.innerHTML = x;
+		n = n.childNodes;
+
+		if (i = n.length) {
+			if (N2A) return Array.prototype.slice.call(n);
+
+			for(a=[]; i--;) a[i] = n[i];
+			return a
+			};
 		};
 
 	function insert(nn, p, rn) {
