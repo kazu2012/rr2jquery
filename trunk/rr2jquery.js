@@ -1,7 +1,7 @@
 /*!
- * Copyright 2010, Vopilovsky Constantine  vflash@ro.ru
- * Date: Wed Jul 14 2010 12:11:56 GMT+0400
- * v1.0.2
+ * Copyright 2010, Vopilovsky Konstantine  vflash@ro.ru
+ * Date: Fri Oct 01 2010 16:52:16 GMT+0400
+ * v1.0.3
  */
 
 
