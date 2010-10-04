@@ -5,11 +5,17 @@ tmpl_js.mailbox_pager = function(pr, _) {
 	max  = pr.max > 1 ? pr.max : 1;
 	num = num > 1 ? (num > max ? max : num) : 1;
 
+
 	if (num > 7) {
 		pages = [{num:1}, {num:2}, {num:2 + ((num - 5)>>1), is_skip: true}];
 		A = num - 3;
 		};
-	B = max - num > 6 ? (A+6) : max;
+
+	//B = max - num > 6 ? (A+6) : max;
+	if (max - num <= 6) {
+		B = max;
+		A = max - 6;
+		} else B = A+6;
 
 
 	for (i = A; i <= B; i++) {
@@ -84,7 +90,11 @@ elems.mailbox_pager = rr.new_class({
 			A = num - 3;
 			};
 
-		B = max - num > 6 ? (A+6) : max;
+		//B = max - num > 6 ? (A+6) : max;
+		if (max - num <= 6) {
+			B = max;
+			A = max - 6;
+			} else B = A+6;
 
 
 		for (i = A; i <= B; i++) {
