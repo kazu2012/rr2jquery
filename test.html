@@ -130,6 +130,26 @@ TT.dom.serializer= new function(){
 
 	</script>
 
+<script type="text/javascript">
+	String.prototype.supplant = function(o) {
+	    return this.replace(/{([^{}]*)}/g,
+	        function(a, b) {
+	            var r = o[b];
+	            return typeof r === 'string' || typeof r === 'number' ? r : a;
+	        }
+	    );
+	};
+
+	window.htmlEscape = (function() {
+		var rg = new RegExp('[&<>"]', 'g'), cm={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'};
+		function r(A){return cm[A]};
+
+		return function(A) {
+			return (typeof A !== 'string' ? String(A) : A).replace(rg, r); //'
+			}
+		})();
+
+	</script>
 
 
 <script type="text/javascript">
@@ -206,42 +226,53 @@ $(function() {	var _  = master
 		};
 
 
-
-	//var node = document.createElement('div');
-	function test1() {		/*		return tmplTT({			name: '<<<Происшествие во время выборов',
-			text: '<<<У вас недостаточно заряда для голосования'
-			});
-		*/
-		return TT.dom(tmplText)({			name: 'Происшествие во время выборов',
+	function test1() {
+		return master('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
+			name: 'Происшествие во время <выборов>',
 			text: 'У вас недостаточно заряда для голосования'
 			});
-
 		};
+
 
 	function test2() {
-		return master('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
-			name: 'Происшествие во время выборов',
+		/*
+		return tmplTT({
+			name: 'Происшествие во время <выборов>',
+			text: 'У вас недостаточно заряда для голосования'
+			});
+		*/
+		return TT.dom(tmplText)({
+			name: 'Происшествие во время <выборов>',
 			text: 'У вас недостаточно заряда для голосования'
 			});
 		};
 
 
-	setTimeout(function(){
-		var n = 1000, t1, t2, r1, r2;
+	var xDiv = document.createElement('div');
+	function test3() {		xDiv.innerHTML = tmplText.supplant({			name: htmlEscape('Происшествие во время <выборов>'),
+			text: htmlEscape('У вас недостаточно заряда для голосования')
+			});
 
-		benchmark(test1, 10);
-		benchmark(test2, 10);
+		return xDiv.firstChild;
+		};
+
+	var testList = [test1, test2, test3], resList=[], textIndex=0, N=1000;
+
+	function go() {		var test = testList[textIndex];		if (test) {			benchmark(test, 10);
+			r = benchmark(test, N);
+			resList.push(r);			};
+		if (testList[++textIndex]) {			setTimeout(go, 400);
+			return;
+			};
+
+		// show result
+		var tx = "", i=0, r;
+		while(r = resList[i++]) {			tx += 'test #'+i+' T='+r[0]+'   ';			};
+
+		alert(tx);		};
 
 
-		r1 = benchmark(test1, n);
-		r2 = benchmark(test2, n);
-
-
-		t1 = r1[0];
-		t2 = r2[0];
-
-		alert('test1: '+t1+"ms    test2: "+t2+"ms    test2/test1: "+(t1&&(t2/t1)));
-		}, 100)
+	setTimeout(go, 100)
 	});
 
 

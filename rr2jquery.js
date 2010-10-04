@@ -461,7 +461,7 @@ jQuery.extend({
 		var ns = this.namespace, c;
 		if (this.clone_namespace === ns) return this;
 
-		c = rr.cr_master(this.document, this.global);
+		c = rr.new_master(this.document, this.global);
 		c.namespace = c.clone_namespace = this.namespace;
 		return c;
 		};
@@ -506,30 +506,27 @@ jQuery.extend({
 			};
 		};
 
-
 	function tmpl(nn, pr) {
+		switch(typeof nn) {
+			case 'function':
+				if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
+				return new nn(pr, this, false);
+
+			case 'string': break;
+			default: return;
+			};
+
 		var x = nn.indexOf(":"), nx = this.namespace, ns = x>0 ? this.global[nn.substring(0, x)] : nx;
 		if (x === -1 || !ns) return;
 		nn = ns[x = nn.substring(++x)];
 
-		this.namespace = ns;
-		switch(typeof nn) {
-			case 'function':
-				if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-				nn = new nn(pr, this, false);
-				break;
-
-			case 'object':
-			default: this.namespace = nx; return;
+		if (typeof nn === 'function') {
+			this.namespace = ns;
+			if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
+			nn = new nn(pr, this, false);
+			this.namespace = nx;
+			if (nn) return nn;
 			};
-		this.namespace = nx;
-		if (nn) return nn;
-		/*
-		if (nn) {
-			if (pr && nn.nodeType < 0 && typeof nn.set == 'function') nn.set(pr);
-			return nn;
-			};
-		*/
 		};
 
 	function nnFn() {};
