@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>rr2jquery</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="rr2jquery.js"></script>
+
+<script type="text/javascript">
+	/*nano rr_core*/
+	var rr = rr||{};
+
+	rr.nullFunction = function() {};
+
+	rr.printx = (function() {
+		var rg = /%%|%(s|\d{1,2})%?/g, arg, u, l, p;
+
+		function fn(s, x) {
+			if (s == '%%') return '%';
+			if (x === 's') x = p++;
+
+
+			if (x !== u && ++x < l) {
+				return arg[x];
+				};
+			};
+
+		return function(v) {
+			if (v && typeof v == 'string') {
+				p = 0; arg = arguments; l = arg.length;
+				v = v.replace(rg, fn);
+				};
+			return v
+			}
+		})();
+
+
+	rr.new_class_ = function(c) {
+		return function (a1,a2,a3) {
+			var x = c.parent, l, m, u;
+
+			if (typeof x === 'function') {
+				switch(arguments.length){
+					case 0: x.call(this); break;
+					case 1: x.call(this, a1); break;
+					case 2: x.call(this, a1, a2); break;
+					case 3: x.call(this, a1, a2, a3); break;
+
+					default: x.apply(this, arguments);
+					};
+				};
+
+			if (c.factory) {
+				switch(arguments.length){//arguments.length
+					case 0: x = c.factory(this); break;
+					case 1: x = c.factory(this, a1); break;
+					case 2: x = c.factory(this, a1, a2); break;
+					case 3: x = c.factory(this, a1, a2, a3); break;
+
+					default:
+					//Array.prototype.unshift.call(arguments, this);
+					//x = c.factory.apply(arguments);
+
+					for(l = arguments.length, m = [this]; x = l--;) m[x] = arguments[l];
+					x = c.factory.apply(m);
+					};
+
+				if (x !== u) return x;
+				};
+			};
+		};
+
+	rr.new_class = function() {
+		var oc = Object.prototype.constructor;
+		function cn(){};
+
+		return function(c) {
+			if (!c) return;
+			//cn.prototype = c; c = new cn;
+
+			var p = c.parent, i, s, u;
+
+			if (p = p && p.prototype) {
+				cn.prototype = p;
+				p = new cn;
+
+				if (s = c.prototype) {
+					for(i in s) if (s[i] !== u) p[i] = s[i];
+					};
+				};
+
+			i = c.constructor;
+			s = c.class_ = i && i !== oc ? i : this.new_class_(c);
+			if (p = p||c.prototype) s.prototype = p;
+			c.prototype_ = s.prototype;
+
+			if (i = c.interface) s.prototype[(i === true ? 'interface' : i)] = c;
+
+			return s;
+			}
+		}();
+
+	</script>
+
+
+
+<style type="text/css">
+	html, body, button, input, select, textarea {
+		font-family:'Lucida Grande CY','Helvetica Neue',Arial,sans-serif;
+		}
+
+
+	.b-mbox_pager {font-size:0.95em;height:2.5em;line-height:2.5em;padding:0 15px;text-align:center;position:relative;}
+	.b-mbox_pager:hover {text-decoration:none;}
+
+	.b-mbox_pager-next, .b-mbox_pager-prev {color:#666666;position:absolute;cursor:default;}
+	a.b-mbox_pager-next, a.b-mbox_pager-prev {color:#666666;text-decoration:none;cursor:pointer;}
+	.b-mbox_pager-next {right:15px;}
+	.b-mbox_pager-prev {left:15px;}
+
+	.b-mbox_pager-text {font-weight:bold;}
+	a .b-mbox_pager-text {color:#466777;text-decoration:underline;}
+	a:hover .b-mbox_pager-text {color:#2A3D47;}
+
+	.b-mbox_pager-key {display:inline;font-size:70%;}
+	.b-mbox_pager-arr {font-size:150%;}
+
+	.b-mbox_pager-box {background-color:#FFFFFF;padding:0.2em 1ex;position:relative;}
+	.b-mbox_pager-page {border:1px solid #9ECBE2;text-decoration:none;background-color:#FFFFFF;color:#000;padding:0.25em 0.6em;margin:0 2px;}
+	a.b-mbox_pager-page {color:#466777;}
+	span.b-mbox_pager-page {background-color:#9ECBE2;font-weight:bold;}
+	a.b-mbox_pager-page:hover {background-color:#C1DDEC;color:#2A3D47;}
+
+</style>
+
+
+
+<script type="text/javascript">
+	/*setup master*/
+	var tmpl = tmpl||{}, tmpl_js, elems = elems||{}
+	, master = $.new_master(document, {
+		tmpl: tmpl_js = (function() {rr.nullFunction.prototype=tmpl; return new rr.nullFunction})()
+		, ui: elems
+		});
+	</script>
+
+<script type="text/javascript" src="demo_pager/tmpl_demo_pager.src.js"></script>
+<script type="text/javascript" src="demo_pager/ui_demo_pager.src.js"></script>
+
+<script type="text/javascript">
+	/*demo pager*/
+
+	$(function() {
+		var _ = master, step = 1, num = 1, pager;
+
+		// #1  demo tmpl
+		_('body'
+			, _('tmpl:mailbox_pager', {max: 20, num: 11, url_mask: '#/page/%s'})
+			)
+
+
+		// #2 demo ui
+		_('body'
+			, pager = _('ui:mailbox_pager', {max: 20, num: 1, url_mask: '#/page/%s'})
+			)
+
+
+		setInterval(function() {
+			num += step;
+
+			if (num > pager.max) {
+				num = pager.max-1;
+				step = -1;
+				}
+			else if (num < 1) {
+				step = 1;
+				num = 2;
+				};
+
+			pager.set({num: num})
+			}, 150)
+		});
+	</script>
+
+
+
+</head>
+<body>
+<p><a href="http://code.google.com/p/rr2jquery/">http://code.google.com/p/rr2jquery/</a></p><br/>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-2058396-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</body>
+</html>
+
+
+
+
