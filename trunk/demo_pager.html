@@ -157,16 +157,18 @@
 
 		// #1  demo tmpl
 		_('body'
-			, _('tmpl:mailbox_pager', {max: 20, num: 11, url_mask: '#/page/%s'})
+			, _('tmpl:mailbox_pager', {max: 20, num: 1, url_mask: '#/page/%s'})
+			, _('tmpl:mailbox_pager', {max: 20, num: 13, url_mask: '#/page/%s'})
+			, _('tmpl:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
 			)
 
 
 		// #2 demo ui
 		_('body'
-			, pager = _('ui:mailbox_pager', {max: 20, num: 1, url_mask: '#/page/%s'})
+			, pager = _('ui:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
 			)
 
-
+//return;
 		setInterval(function() {
 			num += step;
 
