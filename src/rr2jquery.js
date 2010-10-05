@@ -268,7 +268,7 @@ jQuery.extend({
 				nn = d.body;
 				break;
 				case 'BUTTON':
-				case 'button': nn = tg = 'button';
+				case 'button': nn = tg = 'BUTTON';
 				case 'INPUT':
 				case 'input':
 				if (rr.IE<9 && p) {
@@ -302,7 +302,7 @@ jQuery.extend({
 							case 'style': if (typeof i === 'string') {nn.style.cssText = i} else if (i) rr.setStyle(nn, i); break;
 							case 'href': if(rr.IE && i && i.indexOf('@')!==-1) i = i.replace('@', '%40'); nn.href = i; break;
 
-							default: if (rr.IE < 9 && tg==='button') continue;
+							default: if (rr.IE < 9 && tg==='BUTTON') continue;
 							//try {
 							nn[x] = i;
 							//} catch (e) {alert(nn+"  "+x+": "+i)};
@@ -347,7 +347,7 @@ jQuery.extend({
 						break;
 
 						case 'object':
-						if (a.length !== u && a instanceof Array) {
+						if (a && a.length !== u && a instanceof Array) {
 							append(pn, a, d, sx);
 							};
 						};
@@ -538,20 +538,14 @@ jQuery.extend({
 		e = {first: true, last: false};
 
 		nnFn.prototype = ct.prototype;
-		for(; i < l; i++) {
-			if (!i) e.first = false;
-			if (i === iend) e.last = true;
+		for(;i < l; i++) {
+			if (!i) {e.first = false} else if (i === iend) e.last = true;
 			e.index = i;
 
-			x = new nnFn;
+			x = new nnFn();
 			v = ct.call(x, a[i], this, e);
 
-			if (v === u) v = x;
-			if (v || v === 0 || v === '') {
-				m[i2++] = new ct(a[i], this, e);
-				};
-
-			//m[i] = new ct(a[i], this, e);
+			if (v || v === 0 || v === '') {m[i2++] = v} else if (v === u) m[i2++] = x;
 			};
 		nnFn.prototype = pt;
 
