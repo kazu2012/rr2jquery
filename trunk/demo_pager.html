@@ -14,6 +14,20 @@
 
 	rr.nullFunction = function() {};
 
+	rr.map = function(a, cb) {
+		if (a) {
+			if (typeof a.map === 'function') return a.map(cb);
+
+			var na=[], l = a.length, i=0;
+			if (l>0 && typeof cb == 'function') {
+				na.length = l;
+				for(;i<l;i++) na.push(cb(a[i], i, a))
+				};
+
+			return na;
+			}
+		};
+
 	rr.printx = (function() {
 		var rg = /%%|%(s|\d{1,2})%?/g, arg, u, l, p;
 
@@ -107,9 +121,16 @@
 
 
 <style type="text/css">
-	html, body, button, input, select, textarea {
-		font-family:'Lucida Grande CY','Helvetica Neue',Arial,sans-serif;
+	html, body, div, a, applet, object, iframe, blockquote, abbr, acronym, address, big, cite, code, del, dfn, img, ins, kbd, q, s, samp, strike, sub, sup, tt, var, dl, dt, dd, fieldset, label, legend, caption {
+		margin:0;
+		padding: 0;
+		border: 0;
+		font-weight:inherit;
+		font-style:inherit;
+		font-size:100.1%;
+		font-family:'Lucida Grande CY',Arial,sans-serif;
 		}
+
 
 
 	.b-mbox_pager {font-size:0.95em;height:2.5em;line-height:2.5em;padding:0 15px;text-align:center;position:relative;}
@@ -130,7 +151,7 @@
 	.b-mbox_pager-box {background-color:#FFFFFF;padding:0.2em 1ex;position:relative;}
 	.b-mbox_pager-page {border:1px solid #9ECBE2;text-decoration:none;background-color:#FFFFFF;color:#000;padding:0.25em 0.6em;margin:0 2px;}
 	a.b-mbox_pager-page {color:#466777;}
-	span.b-mbox_pager-page {background-color:#9ECBE2;font-weight:bold;}
+	span.b-mbox_pager-page {background-color:#9ECBE2;font-weight:bold;cursor:default;}
 	a.b-mbox_pager-page:hover {background-color:#C1DDEC;color:#2A3D47;}
 
 </style>
@@ -155,20 +176,21 @@
 	$(function() {
 		var _ = master, step = 1, num = 1, pager;
 
-		// #1  demo tmpl
+
 		_('body'
-			, _('tmpl:mailbox_pager', {max: 20, num: 1, url_mask: '#/page/%s'})
-			, _('tmpl:mailbox_pager', {max: 20, num: 13, url_mask: '#/page/%s'})
-			, _('tmpl:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
-			)
+			, _('p.demo_tmpl' // #1  demo tmpl
+				, _('tmpl:mailbox_pager', {max: 20, num: 1, url_mask: '#/page/%s'})
+				, _('tmpl:mailbox_pager', {max: 20, num: 13, url_mask: '#/page/%s'})
+				, _('tmpl:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
+				)
 
 
-		// #2 demo ui
-		_('body'
-			, pager = _('ui:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
-			)
+			, _('p.demo_ui' // #2 demo ui
+				, pager = _('ui:mailbox_pager', {max: 20, num: 20, url_mask: '#/page/%s'})
+				)
+			);
 
-//return;
+
 		setInterval(function() {
 			num += step;
 
