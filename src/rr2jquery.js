@@ -432,27 +432,29 @@ jQuery.extend({
 		var i = 0, l = m.length, a, x;
 
 		while(i<l) {
-			a = m[i++];
-			x = a && a.nodeType;
 
-			if (x>0) {
-				nn.appendChild(a);
-				continue;
-				};
+			if (a = m[i++]) {
+				x = a.nodeType;
 
-			if (x<0) {
-				if (s) {nn.appendChild(a)} else if (a = a.node) nn.appendChild(a);
-				continue;
+				if (x>0) {
+					nn.appendChild(a);
+					continue;
+					};
+
+				if (x<0) {
+					if (s) {nn.appendChild(a)} else if (a = a.node) nn.appendChild(a);
+					continue;
+					};
 				};
 
 			switch (typeof a) {
-				case 'number': if (!a && a !== 0) break;
+				case 'number': if (a !== a) break;
 				case 'string':
-				nn.appendChild(d.createTextNode(a));
-				break;
+					nn.appendChild(d.createTextNode(a));
+					break;
 
 				case 'object':
-				if (a instanceof Array) append(nn, a, d, s);
+					if (a instanceof Array) append(nn, a, d, s);
 				};
 			};
 		};
@@ -532,22 +534,21 @@ jQuery.extend({
 	function nnFn() {};
 	function forEach(a, ct) {
 		if (!a || !a.length) return
-		var l = a.length, i = 0, i2=0, iend = l-1, m = [], pt=nnFn.prototype, x, e, v, u;
+		var l = a.length, i = 0, iend = l-1, m = [], x = ct.prototype, e = {first: true, last: false, list: a}, v, u;
 
-		if (!ct.prototype.nodeType) ct.prototype.nodeType = -1;
-		e = {first: true, last: false};
+		if (!x.nodeType) x.nodeType = -1;
+		nnFn.prototype = x;
 
-		nnFn.prototype = ct.prototype;
 		for(;i < l; i++) {
-			if (!i) {e.first = false} else if (i === iend) e.last = true;
+			if (i === iend) e.last = true;
 			e.index = i;
 
 			x = new nnFn();
 			v = ct.call(x, a[i], this, e);
 
-			if (v || v === 0 || v === '') {m[i2++] = v} else if (v === u) m[i2++] = x;
+			if (v || v === 0 || v === '') {m.push(v)} else if (v === u) m.push(x);
+			if (!i) e.first = false;
 			};
-		nnFn.prototype = pt;
 
 		return m;
 		}
