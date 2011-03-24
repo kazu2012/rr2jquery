@@ -15,10 +15,11 @@ new function(){
 		z.Opera = (opera.version&&opera.version()||v)-0;
 		}
 	else if (/Konqueror/.test(ua)) {
-		z.Kqn = 3;
+		z.Kqn = (+(ua.match(/Konqueror\/(\d+)/)||false)[1])||3;
 		}
 	else if (/WebKit/.test(ua)) {
-		z.WebKit = parseInt(v, 10);
+		z.WebKit = (+(ua.match(/AppleWebKit\/(\d+)/)||false)[1])||533;
+
 		if (i = ua.match(/Chrome\/(\d+(\.\d)?)/) ) {
 			z.Chrome = +i[1];
 			}
@@ -32,16 +33,16 @@ new function(){
 		}
 	else if (/xplorer/.test(nv.appName)) {
 		z.IE = d.documentMode || v || 8;
-		z.qIE = d.compatMode != "CSS1Compat";
+		z.qIE = d.compatMode != 'CSS1Compat';
 		}
 	else z.Gecko = 1.9;
 
 	// test flash
-	try {f = !z.Kqn && (/(\d+(\.\d+)?)/).exec(nv.mimeTypes["application/x-shockwave-flash"].enabledPlugin.description)[1]||false
+	try {f = !z.Kqn && (/(\d+(\.\d+)?)/).exec(nv.mimeTypes['application/x-shockwave-flash'].enabledPlugin.description)[1]||false
 		} catch (e) {f = false};
 
 	if (!f && z.IE && w.ActiveXObject) {
-		try {f = (/WIN\s+(\d+)/).exec(new ActiveXObject("ShockwaveFlash.ShockwaveFlash").GetVariable("$version"))[1]
+		try {f = (/WIN\s+(\d+)/).exec(new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version'))[1]
 			} catch (e) {};
 		};
 
@@ -145,18 +146,20 @@ jQuery.extend({
 		},
 
 	/*
-	cfg.defer - flag defer
-	cfg.document - ..
-	cfg.charset - default "utf-8"
-	cfg.rm - flag, auto remove script node
-	cfg.event - function event onload script. cfg.event(src, true|false);
+	cfg {function|object|false}
+	cfg.event {function(src, true|false)}
+	cfg.defer {false|default true}
+	cfg.rm {boolean} removing tag
+	cfg.document {document}
+	cfg.charset {string|fasle} , def utf-8
 	*/
 	appendScript: function(src, cfg) {
-		cfg = cfg||false;
+		cfg = cfg ? typeof cfg === 'function' ? {event: cfg} : this.newPrototype(cfg) : false;
+
 		var d = cfg.document||this.document, h = d.documentElement.firstChild, s = d.createElement('script'), ok;
-		s.charset = cfg.charset||"utf-8";
+		s.charset = cfg.charset||'utf-8';
 		s.type = 'text/javascript';
-		if (cfg.defer) s.defer = 'defer';
+		if (cfg.defer !== false) s.defer = 'defer';
 
 		if (cfg.event) {
 			function q() {
@@ -164,11 +167,11 @@ jQuery.extend({
 					ok = true;
 					s.onreadystatechange = s.onload = s.onerror = null;
 					if (cfg.event) cfg.event(src, true);
-					if (cfg.rm) h.removeChild(s);
+					if (cfg.rm || cfg.remove) h.removeChild(s);
 					}
 				};
 
-			if (this.IE) s.onreadystatechange = function() {
+			if (rr.IE) s.onreadystatechange = function() {
 				switch(s.readyState){
 					case'complete':case'loaded':q()
 					}
@@ -178,7 +181,7 @@ jQuery.extend({
 			s.onerror = function() {
 				s.onreadystatechange = s.onload = s.onerror = null; ok = true;
 				if (cfg.event) cfg.event(src, false);
-				if (cfg.rm) h.removeChild(s);
+				if (cfg.rm || cfg.remove) h.removeChild(s);
 				};
 			};
 
@@ -206,7 +209,6 @@ jQuery.extend({
 
 			if (q) {
 				a = true;
-
 				if (!q.nodeType && typeof q == 'object') {
 					if (q.length === u || !(q instanceof Array)) {
 						p = q;
@@ -221,13 +223,20 @@ jQuery.extend({
 
 			// create element
 			switch (nn) {
-				case 'span':case 'a':case 'div':case 'td': //case 'SPAN':case 'A':case 'DIV':case 'TD':case 'input':
-				//case 'tr':case 'br':case 'dd':case 'ul':case 'script':case 'style':
-				x = true;
+				case 'BODY': case 'body':
+					nn = d.body;
+					break;
+
+				case 'DocumentFragment':
+					nn = d.createDocumentFragment();
+					p = false;
+					break;
+
+				case 'br':case 'span':case 'a':case 'div':case 'td': case 'BR':case 'SPAN':case 'A':case 'DIV':case 'TD':
+				nn = d.createElement(nn);
 				break;
 
 				default:
-
 				if (typeof nn !== 'string') {
 					if (rn = nn.nodeType < 0) {
 						if (p && typeof nn.set == 'function') {
@@ -258,59 +267,73 @@ jQuery.extend({
 					x = i;
 					};
 
-				if (x) {nn = nn.substring(0, x)} else x = true;
-				};
+				if (x) nn = nn.substring(0, x);
 
-			if (x)
-			switch (nn) {
-				case 'BODY':
-				case 'body':
-				nn = d.body;
-				break;
-				case 'BUTTON':
-				case 'button': nn = tg = 'BUTTON';
-				case 'INPUT':
-				case 'input':
-				if (rr.IE<9 && p) {
-					nn = d.createElement('<'+nn+' '+(p.name?' name="'+p.name+'"':'')+(p.type?' type="'+p.type+'"':'')+' />');
-					break;
+				switch (nn) {
+					case 'BODY': case 'body':
+						nn = d.body;
+						break;
+
+					case 'BUTTON': case 'button': nn = tg = 'BUTTON';
+					case 'input': if (!tg) tg = 'INPUT';
+					case 'INPUT':
+						if (rr.IE<9 && p) {
+							nn = d.createElement('<'+nn+' '+(p.name?' name="'+p.name+'"':'')+(p.type?' type="'+p.type+'"':'')+' />');
+							break;
+							};
+					default:
+					nn = d.createElement(nn);
 					};
-
-				default:
-				nn = d.createElement(nn);
 				};
 
 			// set param
-			if (!rn) {
-				if (p) {
-					for(x in p) {
-						i = p[x];
-						if (i === u) continue;
+			if (!rn && p) {
+				for(x in p) {
+					i = p[x];
+					if (i === u) continue;
 
-						switch (x) {
-							case 'text': if (i || i === '' || i === 0) nn.appendChild(d.createTextNode(i));
-							case 'parent':
-							//case 'before':
-							case 'add':
-							case 'appendChild':
-							case 'insertAfter':
-							case 'insertBefore':
+					switch (x) {
+						//case 'text': if (i || i === '' || i === 0) nn.appendChild(d.createTextNode(i));
+						case 'text':
+							if (i || i === '' || i === 0) {
+								if (tg !== 'OPTION' || rr.IE<9) {
+									nn.appendChild(d.createTextNode(i));
+									} else nn.text = i;
+								};
+							//break;
+
+						case 'parent':case 'add':
+						//case 'before':
+						case 'appendChild':
+						case 'insertAfter':
+						case 'insertBefore':
+						break;
+
+						case 'id': if (i) id = i; break; // || i===0
+						case 'className':case 'css':
+							if (i && typeof i === 'string') cl = cl ? cl+" "+i : i;
+							break; // || i===0
+
+						case 'style':
+							typeof i === 'string' ?
+								rr.Gecko <= 2 ? nn.setAttribute('style', i) : nn.style.cssText = i
+								: i && rr.setStyle(nn, i);
 							break;
 
-							case 'id': if (i) id = i; break; // || i===0
-							case 'className':case 'css': if (i) cl = cl ? cl+" "+i: i; break; // || i===0
-							case 'style': if (typeof i === 'string') {nn.style.cssText = i} else if (i) rr.setStyle(nn, i); break;
-							case 'href': if(rr.IE && i && i.indexOf('@')!==-1) i = i.replace('@', '%40'); nn.href = i; break;
+						case 'href':
+							if(rr.IE && i && i.indexOf('@')!==-1) i = encodeURIComponent(i); //i = i.replace('@', '%40');
+							nn.href = i;
+							break;
 
-							default: if (rr.IE < 9 && tg==='BUTTON') continue;
-							//try {
-							nn[x] = i;
-							//} catch (e) {alert(nn+"  "+x+": "+i)};
-							};
+						default: if (rr.IE < 9 && tg==='BUTTON') continue;
+						//try {
+						nn[x] = i;
+						//} catch (e) {alert(nn+"  "+x+": "+i)};
 						};
-
 					};
+				};
 
+			if (!rn) {
 				if (cl) nn.className = cl;
 				if (id) nn.id = id;
 				};
@@ -338,16 +361,15 @@ jQuery.extend({
 						};
 
 					switch (typeof a) {
-						case 'number':
-						if (!a && a !== 0) break;
+						case 'number': if (a !== a) break;
 						case 'string':
-						//try {
-						pn.appendChild(d.createTextNode(a));
-						//} catch (e) {alert(pn);throw e};
-						break;
+							//try {
+							pn.appendChild(d.createTextNode(a));
+							//} catch (e) {alert(pn);throw e};
+							break;
 
 						case 'object':
-						if (a && a.length !== u && a instanceof Array) {
+						if (a instanceof Array) {
 							append(pn, a, d, sx);
 							};
 						};

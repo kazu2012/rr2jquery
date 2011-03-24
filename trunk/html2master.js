@@ -1,3 +1,7 @@
+if (/Gecko\/201/.test(navigator.userAgent) ) {
+	document.open();
+	document.close();
+	};
 
 document.body.innerHTML = "";
 
@@ -141,38 +145,38 @@ document.body.innerHTML = "";
 
 
 
-if (false)
-(function(tp, nt) {
-	var w = window.open('', null, 'width=600, height=500, resizable=yes');
-	if (!w) return;
+if (false) {
+	void(function(tp, nt, w) {
+		if (w = window.open('', null, 'width=600, height=500, resizable=yes')) {
+			var d = w.document, s = d.createElement('script');
+			s = d.createElement('script');
+			s.charset = 'utf-8';
+			s.type = 'text/javascript';
+			s.defer = 'defer';
 
+			var hs = location.hash;
+			if (hs) {
+				hs = hs.indexOf('id:') == 0 ? hs.substring(3) : hs.indexOf('#id:') == 0 ? hs.substring(4) : false;
 
-	var d = w.document, s = d.createElement('script');
-	s = d.createElement('script');
-	s.charset = 'utf-8';
-	s.type = 'text/javascript';
-	s.defer = 'defer';
+				hs = hs && document.getElementById(hs);
+				if (hs && hs.nodeName =='IFRAME') {
+					hs = hs.contentDocument;
+					if (hs) hs = hs.body;
+					};
+				};
 
-	var hs = location.hash;
-	if (hs) {
-		hs = hs.indexOf('id:') == 0 ? hs.substring(3) : hs.indexOf('#id:') == 0 ? hs.substring(4) : false;
+			w.elementScan = hs||document.body;
+			w.typeMaster = tp;
+			w.nullTextNode = nt ? ' ':null;
+			w.scan_href = location.href;
 
-		hs = hs && document.getElementById(hs);
-		if (hs && hs.nodeName =='IFRAME') {
-			hs = hs.contentDocument;
-			if (hs) hs = hs.body;
-			};
-		};
+			s.src = 'http://vflash.ru/rr2jquery/html2master.js';
 
-	w.elementScan = hs||document.body;
-	w.typeMaster = tp;
-	w.nullTextNode = nt ? ' ':null;
-	w.scan_href = location.href;
+			d.body.appendChild(s);
+			}
 
-	s.src = 'http://vflash.ru/rr2jquery/html2master.js';
-
-	d.body.appendChild(s);
-	})(1); // mode 1(js-type) or 2(json-type)
+		})(1); // mode 1(js-type) or 2(json-type)
+	};
 
 
 /* bookmarklet url*/
