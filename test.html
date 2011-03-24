@@ -158,76 +158,49 @@ tmpl.alerts_holder = function(pr, _){
 	var ns = this;
 
 	ns.node = _('DIV.futu_alerts_holder#futu_alerts_holder'
-		, _('DIV.futu_alert error', {style:"position: relative; top: 0pt; display: block;"}
+		, _('DIV.futu_alert error', {style:"position: relative; top: 0pt; display: block;color:#f00;"}
 			, ns.node_name = _('DIV.futu_alert_header'
-				, _.text(pr.name||'')
+				, _.text(pr.name)
 				)
 
 			, ns.node_text = _('DIV.futu_alert_text'
-				, _.text(pr.text||'')
+				, _.text(pr.text)
 				)
 			)
-		)
+		);
 	};
 
-tmpl.alerts_holder_fast =  (function() {
-
-	var nx, d, mx;
-
-	function cmx(x){
-		var i, v; mx = {};
-		for(i in x) {
-			if (v = x[i] && x[i].className) mx[v] = i;
-			};
-		};
-
-	return function(pr, _) {
-		if (!nx || d !== _.document) {
-			//nx = new _.global.tmpl.rm-mtbox_row(false, _);
-			var x = new tmpl.alerts_holder(false, _);
-			if (!mx) cmx(x);
-
-			nx = x.node.cloneNode(true);
-			d = _.document;
-			return x;
-			};
-
-		this.node = nx.cloneNode(true);
-		var ns = this, a = ns.node.getElementsByTagName("*"), i = 0, n, v;
-		while(n = a[i++]) if (v = n.className) if (v = mx[v]) ns[v] = n;
-
-		n = ns.node_name;
-		ns.name = n.firstChild || n.appendChild(d.createTextNode(""));
-
-		n = ns.node_text;
-		ns.text = n.firstChild || n.appendChild(d.createTextNode(""));
-
-		ns.name.data = pr.name;
-		ns.text.data = pr.text;
-
-		return ns;
-		};
-	})()
 
 
-var tmplText = '<div class="futu_alerts_holder" id="futu_alerts_holder"><div style="position: relative; top: 0pt; display: block;" class="futu_alert error"><div class="futu_alert_header">{name}</div><div class="futu_alert_text">{text}</div></div></div>';
+var tmplText = '<div class="futu_alerts_holder" id="futu_alerts_holder"><div style="position: relative; top: 0pt; display: block;color:#f00;" class="futu_alert error"><div class="futu_alert_header">{name}</div><div class="futu_alert_text">{text}</div></div></div>';
 
 var tmplTT = TT.dom(tmplText);
 $(function() {	var _  = master
 
+	_('body'
+		, _('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
+			name: 'Происшествие во время <выборов>',
+			text: 'У вас недостаточно заряда для голосования'
+			})
+		);
+
+
+
+
 	function benchmark(fn, i, v) {
 		var t, r;
 
-		t = new Date().getTime();
+		t = new Date();
 		while(i--) r = fn(v, 1, 2,3, 4, 5);
-		t = new Date().getTime()-t;
+		t = new Date()-t;
 
 		return [t, r];
 		};
 
 
+
 	function test1() {
-		return master('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
+		return _('tmpl:alerts_holder', { //tmpl:alerts_holder_fast
 			name: 'Происшествие во время <выборов>',
 			text: 'У вас недостаточно заряда для голосования'
 			});
@@ -272,7 +245,7 @@ $(function() {	var _  = master
 		alert(tx);		};
 
 
-	setTimeout(go, 100)
+	setTimeout(go, 400)
 	});
 
 
