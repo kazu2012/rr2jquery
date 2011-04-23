@@ -1,5 +1,5 @@
 
-tmpl.mailbox_pager = function(pr, _) {
+tmpl.mailbox_pager = function(_, pr) {
 	var ns = this;
 
 	ns.node = _('div.b-mbox_pager', {css: pr.css}

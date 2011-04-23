@@ -325,10 +325,17 @@ jQuery.extend({
 							nn.href = i;
 							break;
 
-						default: if (rr.IE < 9 && tg==='BUTTON') continue;
-						//try {
-						nn[x] = i;
-						//} catch (e) {alert(nn+"  "+x+": "+i)};
+						default:
+							if (rr.IE < 9 && tg==='BUTTON') continue;
+
+							if (x.indexOf('attr ') === 0) {
+								if (x = x.substr(5) ) nn.setAttribute(x, i);
+								continue;
+								};
+
+							//try {
+							nn[x] = i;
+							//} catch (e) {alert(nn+"  "+x+": "+i)};
 						};
 					};
 				};
@@ -514,7 +521,7 @@ jQuery.extend({
 			if (typeof c === 'function') {
 				_cr.namespace = ns;
 				if (!c.prototype.nodeType) c.prototype.nodeType = -1;
-				ui = new c(pr, _cr, s);
+				ui = new c(_cr, pr, s);
 				} else return false;
 			_cr.namespace = x;
 
@@ -534,7 +541,7 @@ jQuery.extend({
 		switch(typeof nn) {
 			case 'function':
 				if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-				return new nn(pr, this, false);
+				return new nn(this, pr, false);
 
 			case 'string': break;
 			default: return;
@@ -547,13 +554,14 @@ jQuery.extend({
 		if (typeof nn === 'function') {
 			this.namespace = ns;
 			if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-			nn = new nn(pr, this, false);
+			nn = new nn(this, pr, false);
 			this.namespace = nx;
 			if (nn) return nn;
 			};
 		};
 
 	function nnFn() {};
+	var nproto = nnFn.prototype;
 	function forEach(a, ct) {
 		if (!a || !a.length) return
 		var l = a.length, i = 0, iend = l-1, m = [], x = ct.prototype, e = {first: true, last: false, list: a}, v, u;
@@ -566,7 +574,7 @@ jQuery.extend({
 			e.index = i;
 
 			x = new nnFn();
-			v = ct.call(x, a[i], this, e);
+			v = ct.call(x, this, a[i], e); //
 
 			if (v || v === 0 || v === '') {m.push(v)} else if (v === u) m.push(x);
 			if (!i) e.first = false;
