@@ -1,5 +1,5 @@
 // extend tmpl pager
-tmpl_js.mailbox_pager = function(pr, _) {
+tmpl_js.mailbox_pager = function(_, pr) {
 	var max = pr.max, num = pr.num, pages=[], A = 1, B, i;
 
 	max  = pr.max > 1 ? pr.max : 1;
@@ -40,7 +40,7 @@ tmpl_js.mailbox_pager = function(pr, _) {
 // extend ui pager
 elems.mailbox_pager = rr.new_class({
 	interface: true,
-	constructor: function(pr, _) {
+	constructor: function(_, pr) {
 		this.master = _.clone();// клонируем чтобы сохранить контекст (_.namespace и _.global)
 
 		if (pr.num > 0) this.num = pr.num;
