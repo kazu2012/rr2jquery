@@ -30,9 +30,10 @@ document.body.innerHTML = "";
 
 	function convert(n, sp, dNone) {
 		if (!n) return;
-		var tx, tag = n.nodeName, fp, px, v, x, a, i, u;
+		var tx, tag = (n.nodeName||'').toLocaleLowerCase(), fp, px, v, x, a, i, u;
 		if (!sp) sp = '';
 		numb++;
+
 
 		if (!dNone)
 		if (x = n.currentStyle || (n.ownerDocument||{}).defaultView.getComputedStyle(n, null)) {
@@ -46,8 +47,8 @@ document.body.innerHTML = "";
 		a = ['href','title','src','cellPadding','cellSpacing','border', 'colSpan', 'rowSpan', 'scope','width','height','type', 'name', 'value', 'method', 'action', ''];
 		i = 0;
 		while(x = a[i++]) {
-			if (tag == 'LI' && x=='value') continue;
-			if (x == 'type' && (tag === 'SELECT' || tag=='TEXTAREA' || tag==='BUTTON')) continue;
+			if (tag == 'li' && x=='value') continue;
+			if (x == 'type' && (tag === 'select' || tag=='textarea' || tag==='button')) continue;
 
 
 			//if (x==='id' || x==='className') continue;
@@ -91,7 +92,7 @@ document.body.innerHTML = "";
 
 
 		a = '';
-		if (tag !== 'IFRAME')
+		if (tag !== 'iframe')
 		for(x = n.firstChild; x; x = x.nextSibling) {
 			v = u;
 
