@@ -1,6 +1,6 @@
 /*!
  * Copyright 2010, Vopilovsky Konstantine  vflash@ro.ru
- * Date: Fri Oct 01 2010 16:52:16 GMT+0400
+ * Date: Fri Aug 19 2011 13:02:37 GMT+0400
  * v1.0.3
  */
 
