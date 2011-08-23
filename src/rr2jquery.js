@@ -333,7 +333,8 @@ jQuery.extend({
 										nn.appendChild(d.createTextNode(i));
 									} else nn.text = i;
 								}
-								//break;
+								break;
+
 							case 'id':
 								if (i) id = i;
 								break; // || i===0
