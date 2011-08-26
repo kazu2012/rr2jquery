@@ -432,7 +432,7 @@ jQuery.extend({
 			};
 
 
-			return !p || !p.parent ? nn : insert(nn, p, rn);
+			return p ? p.parent || p.after || p.before ? insert(nn, p, rn) : nn : nn;
 		};
 
 		c_.global = ns;
@@ -500,16 +500,15 @@ jQuery.extend({
 		}
 
 		// insert
-		if (p.insertAfter) {
-			a = p.insertAfter;
+		if (a = p.after) {
 			ib = a.nextSibling;
 			if (!ib) ip = a.parentNode;
-		}
+		};
 
-		if (a = p.parent || p.appendChild || ip)
+		if (a = p.parent || ip)
 			return a.appendChild(nn);
 
-		if (a = p.insertBefore || ib)
+		if (a = p.before || ib)
 			return a.parentNode.insertBefore(nn, a);
 
 		return nn;
