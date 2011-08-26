@@ -243,7 +243,7 @@ jQuery.extend({
 
 			// create element
 			switch (nn) {
-				case 'BODY': case 'body':
+				case 'body':
 					nn = d.body;
 					break;
 
@@ -252,7 +252,7 @@ jQuery.extend({
 					p = false;
 					break;
 
-				case 'br': case 'span': case 'a': case 'div': case 'td': case 'BR': case 'SPAN': case 'A': case 'DIV': case 'TD':
+				case 'div': case 'li': case 'br': case 'span': case 'a': case 'td': case 'abbr':
 					nn = d.createElement(nn);
 					break;
 
@@ -292,16 +292,13 @@ jQuery.extend({
 
 					if (x) nn = nn.substring(0, x);
 
-					switch (nn) {
-						case 'BODY': case 'body':
+					switch (tg = nn) {
+						case 'body':
 							nn = d.body;
 							break;
 
-						case 'BUTTON': case 'button':
-							nn = tg = 'BUTTON';
-						case 'input':
-							if (!tg) tg = 'INPUT';
-						case 'INPUT':
+						
+						case 'input': case 'button':
 							if (rr.IE < 9 && p) {
 								nn = d.createElement('<' + nn + ' ' + (p.name ? ' name="' + p.name + '"' : '') + (p.type ? ' type="' + p.type + '"' : '') + ' />');
 								break;
@@ -322,65 +319,65 @@ jQuery.extend({
 				} 
 				else {
 					for (x in p) {
-						i = p[x];
-						if (i === u) continue;
+						v = p[x];
+						if (v === u) continue;
 
 						switch (x) {
-							//case 'text': if (i || i === '' || i === 0) nn.appendChild(d.createTextNode(i));   
+							//case 'text': if (v || v === '' || v === 0) nn.appendChild(d.createTextNode(v));   
 							case 'text':
-								if (i || i === '' || i === 0) {
-									if (tg !== 'OPTION' || rr.IE < 9) {
-										nn.appendChild(d.createTextNode(i));
-									} else nn.text = i;
-								}
+								if (v || v === '' || v === 0) {
+									if (tg !== 'option' || rr.IE < 9) {
+										nn.appendChild(d.createTextNode(v));
+									} else nn.text = v;
+								};
 								break;
 
 							case 'id':
-								if (i) id = i;
-								break; // || i===0
-							case 'className': case 'css':
-								if (i && typeof i === 'string') cl = cl ? cl + ' ' + i : i;
-								break; // || i===0
+								if (v) id = v;  
+								break;
+
+							case 'class': case 'css': case 'className':
+								if (v && typeof v === 'string') cl = cl ? cl + ' ' + v : v;
+								break;
 
 							case 'style':
-								typeof i === 'string' ? nn.style.cssText = i : i && rr.setStyle(nn, i); 
+								typeof v === 'string' ? nn.style.cssText = v : v && rr.setStyle(nn, v); 
 								/* 
-								typeof i === 'string' ?
-									rr.Gecko <= 2 ? nn.setAttribute('style', i)  // непомню почему проверяю старые Gecko
-										: nn.style.cssText = i
-									: i && rr.setStyle(nn, i);
+								typeof v === 'string' ?
+									rr.Gecko <= 2 ? nn.setAttribute('style', v)  // непомню почему проверяю старые Gecko
+										: nn.style.cssText = v
+									: v && rr.setStyle(nn, v);
 								*/
 								break;
 
 							case 'href':
-								if (rr.IE<9 && i && i.indexOf('@') !== -1) {
+								if (rr.IE<9 && v && v.indexOf('@') !== -1) {
 									// иногда всплывает ошибка. это несовсем удачное решение  
 									// проблему нужно сново пересмотреть, как только она вcплывет снова
-									i = i.replace(/@/g, '%40');
+									v = v.replace(/@/g, '%40');
 								};
 
-								nn.href = i;
+								nn.href = v;
 								break;
 
-							case 'add':
-							case 'parent': 
-							case 'appendChild':
-							//case 'before':
-							case 'insertAfter':
-							case 'insertBefore':
+							case 'add': case 'parent': 
+								break;
+
+							case 'for': case 'colspan': case 'rowspan': case 'cellpadding': case 'cellspacing':
+								nn.setAttribute(x, i);
 								break;
 
 							default:
-								if (rr.IE < 9 && tg === 'BUTTON') continue;
+								if (rr.IE < 9)  {
+									if ((tg === 'button' || tg === 'input') && (x === 'name' || x === 'type') )
+										continue; // bug
+								}; 
 
-								if (x.indexOf('attr ') === 0) {
-									if (x = x.substr(5)) nn.setAttribute(x, i);
-									continue;
+								if (x.indexOf('~/') === 0) {
+									if (x = x.substr(2)) nn.setAttribute(x, i);
+								} else {
+									nn[x] = v; 
 								};
-
-								//try {
-								nn[x] = i;
-								//} catch (e) {alert(nn+'  '+x+': '+i)};
 						};
 					};
 				};
@@ -435,7 +432,7 @@ jQuery.extend({
 			};
 
 
-			return p ? p.parent || p.insertBefore || p.insertAfter ? insert(nn, p, rn) : nn : nn;  // хочу избавиться от insertBefore || insertAfter. 
+			return !p || !p.parent ? nn : insert(nn, p, rn);
 		};
 
 		c_.global = ns;
