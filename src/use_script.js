@@ -1,6 +1,6 @@
 
 /*!
-  Copyright 2011, Vopilovsky Konstantine  vflash@ro.ru
+  Copyright 2011, Vopilovsky Constantin  vflash@ro.ru
  */
  
 new function () {
