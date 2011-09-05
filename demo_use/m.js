@@ -3,10 +3,10 @@
 */
 
 
-use('/jquery-1.4.2.min.js')
+use('/jquery-1.6.2.js')
 use('/src/rr2jquery.js')
 
-use('./jc.js'); // ggggg 
+use('./jc.js'); // ggggg
 use('./m1.js', true); // eeee
 use('./je.js');
 
