@@ -45,6 +45,7 @@ new function () {
 				var r;
 
 				src = src.indexOf('./') === 0 ? (path||host||'') + src.substr(1)
+					: src.indexOf('http://') === 0 || src.indexOf('https://') === 0 ? src
 					: src.indexOf('/') !== 0 ? (path||host||'') + '/'+src
 						: (host||'') + src;
 
