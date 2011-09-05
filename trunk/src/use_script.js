@@ -1,3 +1,8 @@
+
+/*!
+  Copyright 2011, Vopilovsky Konstantine  vflash@ro.ru
+ */
+ 
 new function () {
 
 	// http://fmarcia.info/jsmin/jsmin.js
