@@ -2,7 +2,7 @@
 /*!
   Copyright 2011, Vopilovsky Constantin  vflash@ro.ru
  */
- 
+
 new function () {
 
 	// http://fmarcia.info/jsmin/jsmin.js
@@ -15,7 +15,7 @@ new function () {
 
 	function load_use(src, host) {
 		var path = src.substr(0, src.split('?')[0].lastIndexOf('/') );
-		
+
 
 		var u
 		, xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP")
@@ -24,14 +24,14 @@ new function () {
 		, stop
 		;
 
-		
+
 		xhr.open("GET", src, false);
 		xhr.send(null);
-		
+
 		if (xhr.status != 200) {
 			return {error: 'not load'};
 		};
-		
+
 		var func;
 		try {
 			func = new Function("use", xhr.responseText)
@@ -60,7 +60,7 @@ new function () {
 						list.push({src: src, is_list: true});
 						list.push.apply(list, r.list);
 					};
-				} else 
+				} else
 				if (is_list !== false) {
 					list.push({src: src, script: true});
 				};
@@ -96,18 +96,18 @@ new function () {
 		var src = attr(s, 'data-src');
 
 		var r = load_use(src, host), m=[], i, x;
-		
+
 		if (!r || r.error) {
 			alert('error load ' + src)
 			return;
 		};
-		
+
 		switch(attr(s, 'data-mode') ) {
 			case 'html':
 				mode_html(r.list);
 				break;
 
-			case 'pack': 
+			case 'pack':
 				x = (attr(s, 'data-debug')||'').toLocaleLowerCase();
 				var use_debug = x == 'true' ? 1 : parseInt(+x, 10) || false;
 
@@ -117,8 +117,8 @@ new function () {
 				mode_pack(r.list, use_debug,  use_escape);
 				break;
 
-			case 'script': 
-			default:  
+			case 'script':
+			default:
 				mode_script(r.list);
 		};
 	};
@@ -135,7 +135,7 @@ new function () {
 			//console.log('<script src="' + m.join('"></script>\n<script src="') + '"></script>')
 		};
 	};
-	
+
 	function getTextarea() {
 		var d = document, n = d.createElement('textarea'), ns = {};
 		n.setAttribute("spellcheck", "false");
@@ -146,7 +146,7 @@ new function () {
 		n.id = "textarea";
 		n.value = "";
 		d.body.appendChild(n);
-		
+
 		ns.textarea = n;
 
 		n = d.createElement('h1')
@@ -162,8 +162,8 @@ new function () {
 	function mode_html(a) {
 		window.onload = function () {
 			var ns = getTextarea(), m, x, i;
-			
-			
+
+
 
 			for(m = [], i = 0; x = a[i++];) {
 				if (x.script) m.push(x.src);
@@ -173,7 +173,7 @@ new function () {
 				ns.textarea.value = '<script src="' + m.join('"></script>\n<script src="') + '"></script>';
 			};
 		};
-		
+
 	};
 
 	function mode_pack(a, use_debug, use_escape) {
@@ -181,7 +181,7 @@ new function () {
 		function load(x) {
 			var xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
 			xhr.open("GET", x.src, true);
-			
+
 			xhr.onreadystatechange = function () {
 				var status = xhr.readyState === 4 ? xhr.status : null;
 				if (!status) return;
@@ -192,17 +192,17 @@ new function () {
 					return end();
 				};
 
-				x.LM = !xhr.getAllResponseHeaders ? null : ((xhr.getAllResponseHeaders() + '').match(/Last-Modified: ([^\n]+)/) || false)[1];
-				
+				x.LM = typeof xhr.getAllResponseHeaders !== 'function' ? null : ((xhr.getAllResponseHeaders() + '').match(/Last-Modified: ([^\n]+)/) || false)[1];
+
 				x.text = xhr.responseText;
 				x.complite = true;
-				
+
 				end();
 			};
 
 			xhr.send(null);
 		};
-		
+
 		var complite = false;
 		function end() {
 			var ns, m, x, i;
@@ -220,7 +220,7 @@ new function () {
 					E.push('/* ERROR: ' + x.src + '  */')
 					continue;
 				};
-				
+
 				if (x.script) {
 					C.push('\n/* URL: ' + x.src + ' */\n' + jsmin("", x.text, 1))
 				};
@@ -271,7 +271,7 @@ new function () {
 
 		window.onload = function () {
 			var m = [], i = 0, x;
-			
+
 			for(; x = a[i++];) if (x.script) {
 				load(x);
 				};
