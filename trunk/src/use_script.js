@@ -26,7 +26,11 @@ new function () {
 
 
 		xhr.open("GET", src, false);
-		xhr.send(null);
+		try {
+			xhr.send(null);
+		} catch (e) { 
+			return {error: 'not load'};
+		};
 
 		if (xhr.status != 200) {
 			return {error: 'not load'};
@@ -184,7 +188,7 @@ new function () {
 
 			xhr.onreadystatechange = function () {
 				var status = xhr.readyState === 4 ? xhr.status : null;
-				if (!status) return;
+				if (status === null) return;
 
 				if (status != 200) {
 					x.complite = true;
