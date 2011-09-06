@@ -1,4 +1,4 @@
-
+﻿
 /*!
   Copyright 2011, Vopilovsky Constantin  vflash@ro.ru
  */
