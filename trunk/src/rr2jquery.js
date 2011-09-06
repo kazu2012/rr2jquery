@@ -1,4 +1,4 @@
-/*!
+п»ї/*!
  * Copyright 2010, Vopilovsky Constantin  vflash@ro.ru
  * Date: Fri Aug 19 2011 13:02:37 GMT+0400
  * v1.0.4
@@ -58,38 +58,6 @@
 
 
 jQuery.extend({
-	document: document, // for nado
-
-	setStyle: function(n, pr) {
-		if (!n) return;
-		var st = n.style, x, v, u;
-
-		switch(typeof pr) {
-			case 'object':
-				x = pr.cssText;
-				if (x || x==="") {
-					this.Opera<9 ? n.setAttribute('style', x) : st.cssText = x;
-				};
-
-				if (this.IE < 8) {
-					if ((x = pr.opacity)  !== u) {
-						st.filter = x!=='' ? 'alpha(opacity='+Math.round(x*100)+')' : '';
-					};
-				};
-
-				for (x in pr) {
-					v = pr[x];
-					if (x !== 'cssText' && v !== u) {
-						st[x] = pr[x];
-					};
-				};
-				return;
-
-			case 'string':
-				this.Opera<9 ? n.setAttribute('style', pr) : st.cssText = pr;
-		};
-	},
-
 	/*
 	pr.src - url flash application
 	pr.parent - parent node // parent.appendChild(new_swf)
@@ -97,7 +65,7 @@ jQuery.extend({
 	*/
 	createSWF: function(pr, d) {
 		if (!pr || !pr.src) return;
-		d = (pr.parent && pr.parent.ownerDocument) || d || pr.document || this.document;
+		d = (pr.parent && pr.parent.ownerDocument) || d || pr.document || document;
 
 		function apIE(n, nm, v) {
 			var x = d.createElement('param');
@@ -134,11 +102,13 @@ jQuery.extend({
 						this.IE ? apIE(n, i, x) : n.setAttribute(i, x);
 					};
 					break;
+
 				case 'id': case 'className': case 'width': case 'height':
 					if (x || x === 0) n[i] = x;
 					break;
+
 				case 'style':
-					this.setStyle(n, x);
+					if (typeof x === 'string') nn.style.cssText = x;
 					break;
 			}
 		}
@@ -172,7 +142,7 @@ jQuery.extend({
 	appendScript: function(src, cfg) {
 		cfg = cfg ? typeof cfg === 'function' ? {event: cfg} : this.newPrototype(cfg) : false;
 
-		var d = cfg.document||this.document, h = d.documentElement.firstChild, s = d.createElement('script'), ok;
+		var d = cfg.document || document, h = d.documentElement.firstChild, s = d.createElement('script'), ok;
 		s.charset = cfg.charset||'utf-8';
 		s.type = 'text/javascript';
 		if (cfg.defer !== false) s.defer = 'defer';
@@ -222,7 +192,7 @@ jQuery.extend({
 			if (!nn) return;
 
 			var tg, p, a, u, l = arguments.length
-			, rn // флаг что это компонент (nodeType < 0)
+			, rn // С„Р»Р°Рі С‡С‚Рѕ СЌС‚Рѕ РєРѕРјРїРѕРЅРµРЅС‚ (nodeType < 0)
 			, i, x, id, cl, pn, sx
 			;
 
@@ -264,8 +234,8 @@ jQuery.extend({
 							nn = new nn(this, pr, false);
 						};
 
-						if (i = nn.nodeType) rn = i < 0; // кешируем флажок что это обьект не HTMLElement
-							else return; // подсунили чтота нето
+						if (i = nn.nodeType) rn = i < 0; // РєРµС€РёСЂСѓРµРј С„Р»Р°Р¶РѕРє С‡С‚Рѕ СЌС‚Рѕ РѕР±СЊРµРєС‚ РЅРµ HTMLElement
+							else return; // РїРѕРґСЃСѓРЅРёР»Рё С‡С‚РѕС‚Р° РЅРµС‚Рѕ
 
 						break;
 					} ;
@@ -299,7 +269,7 @@ jQuery.extend({
 
 						
 						case 'input': case 'button':
-							if (rr.IE < 9 && p) {
+							if (badIE && p) {
 								nn = d.createElement('<' + nn + ' ' + (p.name ? ' name="' + p.name + '"' : '') + (p.type ? ' type="' + p.type + '"' : '') + ' />');
 								break;
 							};
@@ -312,7 +282,7 @@ jQuery.extend({
 			// set params
 			if (p) {
 				if (rn) {
-					// nn._set_parameters - дает право мастеру изменянять значения через функцию set({key: value, ...})
+					// nn._set_parameters - РґР°РµС‚ РїСЂР°РІРѕ РјР°СЃС‚РµСЂСѓ РёР·РјРµРЅСЏРЅСЏС‚СЊ Р·РЅР°С‡РµРЅРёСЏ С‡РµСЂРµР· С„СѓРЅРєС†РёСЋ set({key: value, ...})
 					if (nn._set_parameters === true && typeof nn.set == 'function') {
 						nn.set(p);
 					};
@@ -326,7 +296,7 @@ jQuery.extend({
 							//case 'text': if (v || v === '' || v === 0) nn.appendChild(d.createTextNode(v));   
 							case 'text':
 								if (v || v === '' || v === 0) {
-									if (tg !== 'option' || rr.IE < 9) {
+									if (tg !== 'option' || badIE) {
 										nn.appendChild(d.createTextNode(v));
 									} else nn.text = v;
 								};
@@ -341,19 +311,13 @@ jQuery.extend({
 								break;
 
 							case 'style':
-								typeof v === 'string' ? nn.style.cssText = v : v && rr.setStyle(nn, v); 
-								/* 
-								typeof v === 'string' ?
-									rr.Gecko <= 2 ? nn.setAttribute('style', v)  // непомню почему проверяю старые Gecko
-										: nn.style.cssText = v
-									: v && rr.setStyle(nn, v);
-								*/
+								typeof v === 'string' ? nn.style.cssText = v : v && style_set(nn, v);
 								break;
 
 							case 'href':
-								if (rr.IE<9 && v && v.indexOf('@') !== -1) {
-									// иногда всплывает ошибка. это несовсем удачное решение  
-									// проблему нужно сново пересмотреть, как только она вcплывет снова
+								if (badIE && v && v.indexOf('@') !== -1) {
+									// РёРЅРѕРіРґР° РІСЃРїР»С‹РІР°РµС‚ РѕС€РёР±РєР°. СЌС‚Рѕ РЅРµСЃРѕРІСЃРµРј СѓРґР°С‡РЅРѕРµ СЂРµС€РµРЅРёРµ  
+									// РїСЂРѕР±Р»РµРјСѓ РЅСѓР¶РЅРѕ СЃРЅРѕРІРѕ РїРµСЂРµСЃРјРѕС‚СЂРµС‚СЊ, РєР°Рє С‚РѕР»СЊРєРѕ РѕРЅР° РІcРїР»С‹РІРµС‚ СЃРЅРѕРІР°
 									v = v.replace(/@/g, '%40');
 								};
 
@@ -368,7 +332,7 @@ jQuery.extend({
 								break;
 
 							default:
-								if (rr.IE < 9)  {
+								if (badIE)  {
 									if ((tg === 'button' || tg === 'input') && (x === 'name' || x === 'type') )
 										continue; // bug
 								}; 
@@ -438,7 +402,6 @@ jQuery.extend({
 		c_.global = ns;
 		c_.document = d;
 
-		//c_.e = d.masterElement||rr.cr_(d);
 		c_.text = text;
 		c_.html = html;
 
@@ -549,13 +512,17 @@ jQuery.extend({
 		}
 	}
 
-	function clone() {
-		var ns = this.namespace, c;
-		if (this.clone_namespace === ns) return this;
-
-		c = rr.new_master(this.document, this.global);
-		c.namespace = c.clone_namespace = this.namespace;
+	function clone(doc) {
+		var c = rr.new_master(doc||this.document, this.global);
+		c.namespace = this.namespace;
 		return c;
+
+		//var ns = this.namespace, c;
+		// if (this.clone_namespace === ns && doc === this.document) return this;
+
+		//c = rr.new_master(doc||this.document, this.global);
+		//c.namespace = c.clone_namespace = this.namespace;
+		//return c;
 	}
 
 	/*
@@ -663,5 +630,33 @@ jQuery.extend({
 			if (!i) e.first = false;
 		}
 		return m;
-	}
+	};
+
+	function style_set(n, pr) {
+		var st = n.style, x, a, und;
+
+		x = pr.cssText;
+		if (x || x === '') st.cssText = x;
+
+		if (badIE) {
+			x = pr.opacity;
+
+			if (x || x === 0 || x === '') {
+				if (a = n.filters['DXImageTransform.Microsoft.alpha'] || n.filters.alpha) {
+					if (a.enabled = x !== '') a.opacity = Math.round(x * 100);
+				}
+				else if (x !== '') {
+					st.filter += 'alpha(opacity=' + Math.round(x * 100) + ')';
+				};
+			};
+		};
+
+		for (x in pr) {
+			if (x !== 'cssText') {
+				st[x] = pr[x];
+			};
+		};
+	};
+
 })(this.jQuery);
+
