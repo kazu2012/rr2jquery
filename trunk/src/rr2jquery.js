@@ -181,6 +181,8 @@ jQuery.extend({
 
 
 (function (rr) {
+	'use strict';
+
 	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
 
 	rr.new_master = function (d, ns) {
@@ -193,7 +195,7 @@ jQuery.extend({
 
 			var tg, p, a, u, l = arguments.length
 			, rn // флаг что это компонент (nodeType < 0)
-			, i, x, id, cl, pn, sx
+			, i, x, id, cl, pn, sx, v
 			;
 
 			if (q) {
@@ -201,7 +203,7 @@ jQuery.extend({
 				if (!q.nodeType && typeof q == 'object') {
 					if (q.length === u || !isArray(q)) {
 						p = q;
-						q = p.add;
+						arguments[1] = p.add; //q = p.add;
 						if (q === u) a = u;
 					};
 				};
