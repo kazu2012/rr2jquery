@@ -4,6 +4,7 @@
  */
 
 new function () {
+	//'use strict';
 
 	// http://fmarcia.info/jsmin/jsmin.js
 	String.prototype.has=function(c){return this.indexOf(c)>-1;};
@@ -21,7 +22,7 @@ new function () {
 		, xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP")
 		, path = src.substr(0, src.split('?')[0].lastIndexOf('/') )
 		, list = []
-		, stop
+		, stop, x
 		;
 
 
