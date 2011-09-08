@@ -179,9 +179,8 @@ jQuery.extend({
 
 
 
-
 (function (rr) {
-	'use strict';
+	//'use strict';
 
 	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
 
@@ -326,7 +325,7 @@ jQuery.extend({
 								nn.href = v;
 								break;
 
-							case 'add': case 'parent': 
+							case 'add': case 'parent': case 'before': case 'after':
 								break;
 
 							case 'for': case 'colspan': case 'rowspan': case 'cellpadding': case 'cellspacing':
@@ -409,7 +408,7 @@ jQuery.extend({
 
 		c_.clone = clone;
 		c_.tmpl = tmpl;
-		c_.forEach = forEach;
+		c_.map = c_.forEach = map;
 
 		return c_;
 	};
@@ -594,45 +593,56 @@ jQuery.extend({
 		};
 	};
 
-	function nnFn() { };
-	var nproto = nnFn.prototype;
-	function forEach(a, ct) {
+
+	// 
+	function map(a, func) {
 		if (typeof a === 'number' && a === a) {
 			a = {
 				length: a
 			};
 		};
+		
+		if (typeof func !== 'function') return;
 
 		if (!a || !a.length) {
 			if (typeof a !== 'number' || !(x > 0)) {
 				return
 			};
-			a = {
-				length: a
-			};
-		};
 
-		var l = a.length, i = 0, iend = l - 1, m = [], x = ct.prototype, e = {
+			a = {length: a};
+		};
+		
+
+
+		var l = a.length
+		, i = 0
+		, iend = l - 1
+		, m = []
+		, e = {
 			first: true,
 			last: false,
 			list: a
-		}, v, u;
+		}
+		, v, u
+		;
 
-		if (!x.nodeType) x.nodeType = -1;
-		nnFn.prototype = x;
 
 		for (; i < l; i++) {
 			if (i === iend) e.last = true;
 			e.index = i;
-			x = new nnFn();
-			v = ct.call(x, this, a[i], e);
+
+			v = func(this, a[i], e);
+
 			if (v || v === 0 || v === '') {
 				m.push(v)
-			} else if (v === u) m.push(x);
+			};
+
 			if (!i) e.first = false;
 		}
+
 		return m;
 	};
+
 
 	function style_set(n, pr) {
 		var st = n.style, x, a, und;
@@ -644,7 +654,7 @@ jQuery.extend({
 			x = pr.opacity;
 
 			if (x || x === 0 || x === '') {
-				if (a = n.filters['DXImageTransform.Microsoft.alpha'] || n.filters.alpha) {
+				if (a = typeof n.filters !== 'object' ? null : n.filters['DXImageTransform.Microsoft.alpha'] || n.filters.alpha) {
 					if (a.enabled = x !== '') a.opacity = Math.round(x * 100);
 				}
 				else if (x !== '') {
