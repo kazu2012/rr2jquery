@@ -140,41 +140,47 @@ jQuery.extend({
 	cfg.charset {string|fasle} , def utf-8
 	*/
 	appendScript: function(src, cfg) {
-		cfg = cfg ? typeof cfg === 'function' ? {event: cfg} : this.newPrototype(cfg) : false;
+		cfg = cfg ? typeof cfg === 'function' ? {
+			event: cfg
+		} : this.newPrototype(cfg) : false;
+		
 
-		var d = cfg.document || document, h = d.documentElement.firstChild, s = d.createElement('script'), ok;
-		s.charset = cfg.charset||'utf-8';
+		var d = cfg.document || document, h = d.getElementsByTagName('head')[0], s = d.createElement('script'), ok;
+		s.charset = cfg.charset || 'utf-8';
 		s.type = 'text/javascript';
 		if (cfg.defer !== false) s.defer = 'defer';
 
-		if (cfg.event) {
-			function q() {
-				if (!ok) {
-					ok = true;
-					s.onreadystatechange = s.onload = s.onerror = null;
-					if (cfg.event) cfg.event(src, true);
-					if (cfg.rm || cfg.remove) h.removeChild(s);
-					}
-				};
+		function q() {
+			if (!ok) {
+				ok = true;
+				s.onreadystatechange = s.onload = s.onerror = null;
+				if (cfg.event) cfg.event(src, true);
+				if (cfg.rm || cfg.remove) h.removeChild(s);
+			}
+		};
 
-			if (rr.IE) s.onreadystatechange = function() {
-				switch(s.readyState){
-					case'complete':case'loaded':q()
-					}
+		if (cfg.event) {
+
+			if (rr.IE) s.onreadystatechange = function () {
+				switch (s.readyState) {
+					case 'complete': case 'loaded':
+						q()
 				}
+			}
 			else s.onload = q;
 
-			s.onerror = function() {
-				s.onreadystatechange = s.onload = s.onerror = null; ok = true;
+			s.onerror = function () {
+				s.onreadystatechange = s.onload = s.onerror = null;
+				ok = true;
 				if (cfg.event) cfg.event(src, false);
 				if (cfg.rm || cfg.remove) h.removeChild(s);
-				};
 			};
+		};
 
 		s.src = src;
 		s = h.insertBefore(s, h.firstChild);
-		}
-	});
+	}
+});
 
 
 
