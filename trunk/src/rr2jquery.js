@@ -334,9 +334,12 @@ jQuery.extend({
 							case 'add': case 'parent': case 'before': case 'after':
 								break;
 
+							/*
+							// идиологически это неправильно. потому удаляю
 							case 'for': case 'colspan': case 'rowspan': case 'cellpadding': case 'cellspacing':
 								nn.setAttribute(x, i);
 								break;
+							*/
 
 							default:
 								if (badIE)  {
