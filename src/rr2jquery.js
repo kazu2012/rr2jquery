@@ -88,7 +88,8 @@ jQuery.extend({
 			i.event = 'FSCommand(command,args)';
 			i.htmlFor = n.name;
 			i.text = 'eval(args)'; // type='text/javascript'
-			d.documentElement.firstChild.appendChild(i);
+			//d.documentElement.firstChild.appendChild(i);
+			d.getElementsByTagName('head')[0].appendChild(i);
 		}
 
 		for (i in pr) {
