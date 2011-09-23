@@ -124,7 +124,7 @@ document.body.innerHTML = "";
 			a += v;
 			};
 
-		tx += a ? a+'\n'+sp+(tp==2?']':')') : (tp==2?']':')');
+		tx += a ? a + '\n' + sp.substr(1) + (tp==2?']':')') : (tp==2?']':')');
 		return tx;
 		};
 
