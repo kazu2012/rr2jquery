@@ -138,7 +138,7 @@ document.body.innerHTML = "";
 			var tx = convert(x, '\t');
 
 
-			cd.value = 'function(_, pr){\n\t// elements: '+numb+', show: '+numbShow+', text:'+numbText+'\n\t// href: '+(window.scan_href||"")+'\n\n'+tx+'\n\t};';
+			cd.value = 'tmpl.xxx = function(_, pr){\n\t// elements: '+numb+', show: '+numbShow+', text:'+numbText+'\n\t// href: '+(window.scan_href||"")+'\n\n'+tx+'\n};';
 			d.body.appendChild(cd);
 			};
 		})();
