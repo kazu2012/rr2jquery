@@ -1,4 +1,6 @@
-﻿'use strict';
+﻿/*! Author: Vopilovsky Constantine <flash.vkv@gmail.com> */
+
+'use strict';
 
 var rr = this.rr || (this.rr = {});
 
