@@ -1,4 +1,4 @@
-'use strict';
+п»ї'use strict';
 
 var rr = this.rr || (this.rr = {});
 
@@ -14,7 +14,7 @@ var rr = this.rr || (this.rr = {});
 
 			var nn = uu
 			, i, x, id, css, pn, sx, v, p, a
-			, is_group // флаг что это компонент (nodeType < 0)
+			, is_group // С„Р»Р°Рі С‡С‚Рѕ СЌС‚Рѕ РєРѕРјРїРѕРЅРµРЅС‚ (nodeType < 0)
 			, u
 			;
 			
@@ -43,23 +43,23 @@ var rr = this.rr || (this.rr = {});
 							if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
 							nn = new nn(this, pr, false);
 						default:
-							if (!nn || !nn.nodeType) return; // подсунили чтота нето
-							is_group = nn.nodeType < 0; // кешируем флажок что это обьект не HTMLElement
+							if (!nn || !nn.nodeType) return; // РїРѕРґСЃСѓРЅРёР»Рё С‡С‚РѕС‚Р° РЅРµС‚Рѕ
+							is_group = nn.nodeType < 0; // РєРµС€РёСЂСѓРµРј С„Р»Р°Р¶РѕРє С‡С‚Рѕ СЌС‚Рѕ РѕР±СЊРµРєС‚ РЅРµ HTMLElement
 							break;
 					};
 
 
-					if (nn.indexOf(':') !== -1) {  // оптимезирую так как : редко встречается
+					if (nn.indexOf(':') !== -1) {  // РѕРїС‚РёРјРµР·РёСЂСѓСЋ С‚Р°Рє РєР°Рє : СЂРµРґРєРѕ РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ
 						
 						i = nn.indexOf(':');
 						nn = create_group(i ? nn.substring(0, i) : 'tmpl'
 							, nn.substring(++i)
-							, p || false // хеш параметров
-							, ns // пространство имен наборов шаблонов
+							, p || false // С…РµС€ РїР°СЂР°РјРµС‚СЂРѕРІ
+							, ns // РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ РЅР°Р±РѕСЂРѕРІ С€Р°Р±Р»РѕРЅРѕРІ
 							, master
 						);
 
-						if (!nn || !nn.nodeType) return  // подсунили чтота нето
+						if (!nn || !nn.nodeType) return  // РїРѕРґСЃСѓРЅРёР»Рё С‡С‚РѕС‚Р° РЅРµС‚Рѕ
 						is_group = nn.nodeType < 0;
 						break;
 					};
@@ -67,14 +67,14 @@ var rr = this.rr || (this.rr = {});
 					
 
 					// tag.className#idNode
-					if (nn.indexOf('#') > 0) {  // оптимезирую так как id редко встречается
+					if (nn.indexOf('#') > 0) {  // РѕРїС‚РёРјРµР·РёСЂСѓСЋ С‚Р°Рє РєР°Рє id СЂРµРґРєРѕ РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ
 						x = nn.indexOf('#');
 						id = nn.substr(x + 1);
 					} else {
 						x = u;
 					};
 
-					i = nn.indexOf('.'); // класс встречается часто
+					i = nn.indexOf('.'); // РєР»Р°СЃСЃ РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ С‡Р°СЃС‚Рѕ
 					if (i > 0) {
 						css = x ? nn.substring(i + 1, x) : nn.substring(i + 1);
 						x = i;
@@ -89,7 +89,7 @@ var rr = this.rr || (this.rr = {});
 			// set params
 			if (p) {
 				if (is_group) {
-					// nn._set_parameters - дает право мастеру изменянять значения через функцию set({key: value, ...})
+					// nn._set_parameters - РґР°РµС‚ РїСЂР°РІРѕ РјР°СЃС‚РµСЂСѓ РёР·РјРµРЅСЏРЅСЏС‚СЊ Р·РЅР°С‡РµРЅРёСЏ С‡РµСЂРµР· С„СѓРЅРєС†РёСЋ set({key: value, ...})
 					if (nn._set_parameters === true && typeof nn.set == 'function') {
 						nn.set(p);
 					};
@@ -100,7 +100,7 @@ var rr = this.rr || (this.rr = {});
 						if (v === u) continue;
 
 						/*
-						if (i = attr_name[x]) { // алиасы атрибутов
+						if (i = attr_name[x]) { // Р°Р»РёР°СЃС‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 							nn[i] = v; 
 							continue;
 						};
@@ -126,7 +126,7 @@ var rr = this.rr || (this.rr = {});
 								arguments[0] = {nodeType: 3, data: v};
 								break;
 
-								// зарезервированные значения обьекта
+								// Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РѕР±СЊРµРєС‚Р°
 							case 'parent': case 'before': case 'after': case 'nodeName': case 'nodeType': case 'children':
 								break;
 
@@ -148,7 +148,7 @@ var rr = this.rr || (this.rr = {});
 			pn = nn;
 
 			if (is_group) {
-				sx = typeof nn.append === 'function'; // у обьекта свой способ добавления элементов
+				sx = typeof nn.append === 'function'; // Сѓ РѕР±СЊРµРєС‚Р° СЃРІРѕР№ СЃРїРѕСЃРѕР± РґРѕР±Р°РІР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚РѕРІ
 				if (!sx) pn = nn.box || nn.node;
 			};
 
@@ -208,7 +208,7 @@ var rr = this.rr || (this.rr = {});
 					if (a = a.node) {
 						x = a.nodeType;
 
-						if (x > 0) { // должен быть только элемент
+						if (x > 0) { // РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ СЌР»РµРјРµРЅС‚
 							/*
 							if (x > 0) {
 								if (n = a.parentNode ? a.parentNode.children : false) {
@@ -303,12 +303,12 @@ var rr = this.rr || (this.rr = {});
 	};
 
 
-	// будет вставляться как текст
+	// Р±СѓРґРµС‚ РІСЃС‚Р°РІР»СЏС‚СЊСЃСЏ РєР°Рє С‚РµРєСЃС‚
 	function text(x) {
 		return {nodeType: 3, data: x}
 	};
 
-	// будет вставляться как есть
+	// Р±СѓРґРµС‚ РІСЃС‚Р°РІР»СЏС‚СЊСЃСЏ РєР°Рє РµСЃС‚СЊ
 	function write(x) {
 		return {nodeType: 42, data: x}
 	};
@@ -383,10 +383,10 @@ var tmpl = this.tmpl || (this.tmpl = {});
 rr.master = rr.new_master({tmpl: tmpl});
 
 
-// конвектор обьектной модели в HTML
+// РєРѕРЅРІРµРєС‚РѕСЂ РѕР±СЊРµРєС‚РЅРѕР№ РјРѕРґРµР»Рё РІ HTML
 (function(rr) {
 	var attr_name = { constructor: false, nodeType: false, nodeName: false, parentNode: false, children: false
-		// допустимые атрибуты 
+		// РґРѕРїСѓСЃС‚РёРјС‹Рµ Р°С‚СЂРёР±СѓС‚С‹ 
 		, 'title': 'title'
 		, 'style': 'style'
 		, 'name': 'name'
@@ -451,7 +451,7 @@ rr.master = rr.new_master({tmpl: tmpl});
 		;
 
  
-		// атрибуты
+		// Р°С‚СЂРёР±СѓС‚С‹
 		for(i in nn) {
 			x = attr_name[i];
 
@@ -474,14 +474,14 @@ rr.master = rr.new_master({tmpl: tmpl});
 		};
 
 		if (name === 'br' || name === 'meta') {
-			buu.push('<' + name + attrs + ' />'); // потомков у него нет
+			buu.push('<' + name + attrs + ' />'); // РїРѕС‚РѕРјРєРѕРІ Сѓ РЅРµРіРѕ РЅРµС‚
 			return 
 		};
 		
 		buu.push('<' + name + attrs + '>');
 
 		
-		// потомки
+		// РїРѕС‚РѕРјРєРё
 		if (m = nn.children) {
 			for(i = 0, l = m.length; i < l ;) {
 				if (n = m[i++] ) {
@@ -498,7 +498,7 @@ rr.master = rr.new_master({tmpl: tmpl});
 							buu.push(String(n.data).replace(entities_rg, entities_re) );
 							break;
 						
-						case 42: // как есть
+						case 42: // РєР°Рє РµСЃС‚СЊ
 							buu.push(n.data);
 							break;
 					};
@@ -849,7 +849,8 @@ var tmpl_bench = function(_, p) {
 };
 
 
-
+// С‚РµСЃС‚С‹ РѕС‚СЃСЋРґР° http://ctpp.havoc.ru/template_benchmarks.html
+// Рё РѕС‚СЃСЋРґР° http://stackoverflow.com/questions/1324238/what-is-the-fastest-template-system-for-python
 
 
 (function() {
