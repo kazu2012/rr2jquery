@@ -497,14 +497,14 @@ jQuery.extend({
 			if (a) {
 				x = a.nodeType;
 				if (x > 0) {
-					try {
+					//try {
 					pn.appendChild(a);
-					} catch(e) {
-						alert(pn === a)
+					//} catch(e) {
+						//alert(pn === a)
 						//alert(e)
 						//alert(a)
 						
-					}					
+					//}					
 					continue;
 				}
 				else if (x < 0) {
