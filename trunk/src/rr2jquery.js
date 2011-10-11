@@ -187,35 +187,76 @@ jQuery.extend({
 
 
 (function (rr) {
-	//'use strict';
+	'use strict';
 
 	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
 
-	rr.new_master = function (d, ns) {
-		d = d ? d.ownerDocument || d : document;
-		if (!ns) ns = {};
+	// по умолчанию все все параметры вставляются через nn.setAttribute(x, v);
+	// за исключением приведенного списка и параметров начинаюшиеся с символа "_" пример {_xxxx: 333}
+	var attr_to_param = { constructor: false
+		, 'name': badIE ? false : 'name'
+		, 'type': badIE ? false : 'type'
+		, 'title': 'title'
+		, 'value': 'value'
+		, 'width': 'width'
+		, 'height': 'height'
+		, 'src': 'src'
+		, 'href': 'href'
+		, 'rel': 'rel'
+		, 'cellPadding': 'cellPadding'
+		, 'cellpadding': 'cellPadding'
+		, 'cellSpacing': 'cellSpacing'
+		, 'cellspacing': 'cellSpacing'
+		, 'colSpan': 'colSpan'
+		, 'colspan': 'colSpan'
+		, 'rowSpan': 'rowSpan'
+		, 'rowspan': 'rowSpan'
+		, 'border': 'border'
+		, 'content': 'content'
+		, 'bgColor': 'bgColor'
+		, 'bgcolor': 'bgColor'
+		, 'valign': 'vAlign'
+		, 'vAlign': 'vAlign'
+		, 'color': 'color'
+		, 'abbr': 'abbr'
+		, 'align': 'align'
+		, 'httpEquiv': 'httpEquiv'
+		, 'http-equiv': 'httpEquiv'
+		, 'tabIndex': 'tabIndex'
+		, 'tabindex': 'tabIndex'
+		, 'zIndex': 'zIndex'
+		, 'zindex': 'zIndex'
+		, 'onclick': 'onclick'
+		, 'onmousedown': 'onmousedown'
+		, 'onmouseup': 'onmouseup'
+		, 'onmousemove': 'onmousemove'
+	};
 
-		function c_(nn, q) {
-			if (nn === 'text') return d.createTextNode(q);
+
+	rr.new_master = function (d, ns) {
+
+		function master(nn, q) {
+			if (nn === 'text') return d.createTextNode(q); // в ж. этот функционал . нужно использовать _.text("eeeeee")
 			if (!nn) return;
 
-			var tg, p, a, u, l = arguments.length
-			, rn // флаг что это компонент (nodeType < 0)
-			, i, x, id, cl, pn, sx, v
+			var tag, a, u, l = arguments.length
+			, params = false
+			, arg_length = arguments.length
+			, append_index = 1 // с какого аргумента наченаются потомки
+			, is_group // флаг что это группа (nodeType < 0)
+			, i, x, id, css, pn, sx, v
 			;
 
-			if (q) {
-				a = true;
-				if (!q.nodeType && typeof q == 'object') {
-					if (q.length === u || !isArray(q)) {
-						p = q;
-						arguments[1] = p.add; //q = p.add;
-						if (q === u) a = u;
+			if (q && !q.nodeType && typeof q == 'object') {
+				if (q.length === u || !isArray(q)) {
+					params = q;
+
+					arguments[1] = q = params.add; // params.add - призрак прошлого. вырезаю из кода
+					
+					if (q === u) {
+						append_index = 2;
 					};
 				};
-			} 
-			else {
-				a = q === 0 || q === '';
 			};
 
 
@@ -227,11 +268,11 @@ jQuery.extend({
 
 				case 'DocumentFragment':
 					nn = d.createDocumentFragment();
-					p = false;
+					params = false;
 					break;
 
 				case 'div': case 'li': case 'br': case 'span': case 'a': case 'td': case 'abbr':
-					nn = d.createElement(nn);
+					nn = d.createElement(tag = nn);
 					break;
 
 				default:
@@ -239,188 +280,147 @@ jQuery.extend({
 					if (i !== 'string') {
 						if (i === 'function') {
 							if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-							nn = new nn(this, pr, false);
+							nn = new nn(this, params, false);
+
+							i = nn.nodeType;
+							is_group = i < 0;
+							if (!is_group) params = false;
+						} else {
+							i = nn.nodeType;
+							is_group = i < 0;
 						};
-
-						if (i = nn.nodeType) rn = i < 0; // кешируем флажок что это обьект не HTMLElement
-							else return; // подсунили чтота нето
-
+						
+						if (!i) return nn;
 						break;
 					} ;
 
-					i = nn.indexOf(':');
-					if (rn = i !== -1) {
-						nn = cr(i ? nn.substring(0, i) : 'default', nn.substring(++i), p || false, d, ns, c_);
-						if (!nn) return;
+					
+					if (nn.indexOf(':') !== -1) {
+						i = nn.indexOf(':');
+						nn = create_group(nn.substring(0, i), nn.substring(++i), params || false, d, ns, master);
+						if (!nn || !(i=nn.nodeType)) return nn;
+
+						is_group = i < 0;
+						if (!is_group) params = false; // выставлять параметры нет нужды за это отвечает конструктор
 						break;
 					};
 
-					// tag.className#idNode
-					i = nn.indexOf('#');
-					if (i > 0) {
-						id = nn.substring(i + 1);
-						x = i;
+					// tag.className className#idNode
+					if (nn.indexOf('#') > 0) {
+						x = nn.indexOf('#');
+						id = nn.substring(x + 1);
+					} else {
+						x = u;
 					};
 
 					i = nn.indexOf('.');
 					if (i > 0) {
-						cl = x ? nn.substring(i + 1, x) : nn.substring(i + 1);
+						css = x ? nn.substring(i + 1, x) : nn.substring(i + 1);
 						x = i;
 					};
 
-					if (x) nn = nn.substring(0, x);
-
-					switch (tg = nn) {
-						case 'body':
-							nn = d.body;
-							break;
-
-						
-						case 'input': case 'button':
-							if (badIE && p) {
-								nn = d.createElement('<' + nn + ' ' + (p.name ? ' name="' + p.name + '"' : '') + (p.type ? ' type="' + p.type + '"' : '') + ' />');
-								break;
-							};
-						default:
-							nn = d.createElement(nn);
+					if (x) {
+						nn = nn.substring(0, x);
 					};
+
+					nn = (tag = nn) !== 'body' ? d.createElement(nn) : d.body;
 			};
 
 			
 			// set params
-			if (p) {
-				if (rn) {
+			if (params) {
+				if (is_group) {
 					// nn._set_parameters - дает право мастеру изменянять значения через функцию set({key: value, ...})
 					if (nn._set_parameters === true && typeof nn.set == 'function') {
-						nn.set(p);
+						nn.set(params);
 					};
 				} 
 				else {
-					for (x in p) {
-						v = p[x];
+					for (x in params) {
+						v = params[x];
 						if (v === u) continue;
+
+						if (i = attr_to_param[x]) {
+							nn[x] = v; 
+							continue;
+						};
 
 						switch (x) {
 							//case 'text': if (v || v === '' || v === 0) nn.appendChild(d.createTextNode(v));   
 							case 'text':
 								if (v || v === '' || v === 0) {
-									if (tg !== 'option' || badIE) {
+									if (tag !== 'option' || badIE) {
 										nn.appendChild(d.createTextNode(v));
-									} else nn.text = v;
+									} 
+									else {
+										nn.text = v;
+									};
 								};
 								break;
 
 							case 'id':
-								if (v) id = v;  
+								if (v) id = v;
 								break;
 
 							case 'class': case 'css': case 'className':
-								if (v && typeof v === 'string') cl = cl ? cl + ' ' + v : v;
+								if (v) css = css ? css + ' ' + v : v;
 								break;
 
 							case 'style':
+								// style_set(nn, v) для совместимости. но пока не удаляю
 								typeof v === 'string' ? nn.style.cssText = v : v && style_set(nn, v);
-								break;
-
-							case 'href':
-								if (badIE && v && v.indexOf('@') !== -1) {
-									// иногда всплывает ошибка. это несовсем удачное решение  
-									// проблему нужно сново пересмотреть, как только она вcплывет снова
-									v = v.replace(/@/g, '%40');
-								};
-
-								nn.href = v;
 								break;
 
 							case 'add': case 'parent': case 'before': case 'after':
 								break;
 
-							/*
-							// идиологически это неправильно. потому удаляю
-							case 'for': case 'colspan': case 'rowspan': case 'cellpadding': case 'cellspacing':
-								nn.setAttribute(x, i);
-								break;
-							*/
-
 							default:
-								if (badIE)  {
-									if ((tg === 'button' || tg === 'input') && (x === 'name' || x === 'type') )
-										continue; // bug
-								}; 
-
-								if (x.indexOf('~/') === 0) {
-									if (x = x.substr(2)) nn.setAttribute(x, i);
-								} else {
+								if (x.indexOf('_') === 0) {
 									nn[x] = v; 
+								} else {
+									nn.setAttribute(x, v);
 								};
 						};
 					};
 				};
 			};
 
-			if (!rn) { // params
-				if (cl) nn.className = cl;
+			if (!is_group) { // params
+				if (css) nn.className = css;
 				if (id) nn.id = id;
 			};
+			
 
-
-
-			// append child
-			i = a ? 1 : 2;
-			if (i < l) {
-				pn = nn;
-				if (rn && !nn.appendChild) {
-					pn = nn.box || nn.node;
-					if (!pn) l = u;
-				} else sx = rn;
-
-				while (i < l) {
-					if (a = arguments[i++]) {
-						x = a.nodeType;
-						if (x > 0) {
-							pn.appendChild(a);
-							continue;
-						}
-						if (x < 0) {
-							if (sx) {
-								pn.appendChild(a)
-							} else if (a = a.node) pn.appendChild(a);
-							continue;
-						}
-					}
-
-					switch (typeof a) {
-						case 'number':
-							if (a !== a) break;
-						case 'string':
-							//try {
-							pn.appendChild(d.createTextNode(a));
-							//} catch (e) {alert(pn);throw e};
-							break;
-
-						case 'object':
-							if (isArray(a)) {
-								append(pn, a, d, sx);
-							};
+			if (is_group) {
+				sx = typeof nn.appendChild === 'function';
+				if (!sx) {
+					pn = nn.box || nn.node || false;
+					if (pn.nodeType > 0) {
+						append_nativ(d, pn, arguments, append_index);
 					};
+				} else {
+					append_other(d, nn, arguments, append_index);
 				};
+			} else {
+				append_nativ(d, nn, arguments, append_index);
 			};
 
-
-			return p ? p.parent || p.after || p.before ? insert(nn, p, rn) : nn : nn;
+			return params ? params.parent || params.after || params.before ? insert(nn, params, is_group) : nn : nn;
 		};
 
-		c_.global = ns;
-		c_.document = d;
+		d = d ? d.ownerDocument || d : document;
 
-		c_.text = text;
-		c_.html = html;
+		master.global = ns || (ns = {});
+		master.document = d;
 
-		c_.clone = clone;
-		c_.tmpl = tmpl;
-		c_.map = c_.forEach = map;
+		master.text = text;
+		master.html = html;
 
-		return c_;
+		master.clone = clone;
+		master.tmpl = tmpl;
+		master.map = master.forEach = map;
+
+		return master;
 	};
 
 
@@ -454,10 +454,10 @@ jQuery.extend({
 		}
 	}
 
-	function insert(nn, p, rn) {
+	function insert(nn, p, is_group) {
 		var x, a, ip, ib, pn, i;
 
-		if (rn) {
+		if (is_group) {
 			if (x = p.parent) {
 				if (i = x.nodeType) {
 					if (i < 0 && x.appendChild) {
@@ -486,174 +486,174 @@ jQuery.extend({
 			return a.parentNode.insertBefore(nn, a);
 
 		return nn;
-	}
+	};
 
+	function append_nativ(d, pn, m, si) {
+		var i = si, l = m.length, a, x;
 
-	function append(nn, m, d, s) {
-		var i = 0, l = m.length, a, x;
-
-		while (i < l) {
-
-			if (a = m[i++]) {
+		while(i < l) {
+			a = m[i++];
+			
+			if (a) {
 				x = a.nodeType;
-
 				if (x > 0) {
-					nn.appendChild(a);
+					try {
+					pn.appendChild(a);
+					} catch(e) {
+						alert(pn === a)
+						//alert(e)
+						//alert(a)
+						
+					}					
 					continue;
 				}
-
-				if (x < 0) {
-					if (s) {
-						nn.appendChild(a)
-					} else if (a = a.node) nn.appendChild(a);
-					continue;
-				}
+				else if (x < 0) {
+					if (a = a.node) {
+						pn.appendChild(a);
+					};
+					continue
+				};
 			}
+			else if (a !== 0) {
+				continue;
+			};
+			
+			
+			switch (typeof a) {
+				case 'number': if (a !== a) break;
+				case 'string':
+					pn.appendChild(d.createTextNode(a));
+					break;
+
+				case 'object':
+					if (isArray(a)) append_nativ(d, pn, a, 0);
+			};
+		};
+	};
+
+	// у обьекта свой способ добавления потомков
+	function append_other(d, nn, m, si) {
+		var i = si, l = m.length, a, x;
+		
+		while(i < l) {
+			a = m[i++];
+			if (a) {
+				if (a.nodeType) {
+					nn.appendChild(a);
+				};
+			} 
+			else if (a !== 0) {
+				continue;
+			};
 
 			switch (typeof a) {
-				case 'number':
-					if (a !== a) break;
+				case 'number': if (a !== a) break;
 				case 'string':
 					nn.appendChild(d.createTextNode(a));
 					break;
 
 				case 'object':
-					if (isArray(a)) append(nn, a, d, s);
-			}
-		}
-	}
+					if (isArray(a)) append_other(nn, a);
+			};
 
+		};
+	};
+
+
+	// так как отказался от контекста этот функционал считаю устаревшим
 	function clone(doc) {
 		var c = rr.new_master(doc||this.document, this.global);
-		c.namespace = this.namespace;
 		return c;
+	};
 
-		//var ns = this.namespace, c;
-		// if (this.clone_namespace === ns && doc === this.document) return this;
-
-		//c = rr.new_master(doc||this.document, this.global);
-		//c.namespace = c.clone_namespace = this.namespace;
-		//return c;
-	}
-
+	
 	/*
 	ui - name ui || ui element
 	pr - set parament
 	doc - document
 	ns - local name space
-	_cr - constructor element
+	master - constructor element
 	*/
 
-	//var _nullprm = {};
-	function cr(tp, ui, pr, d, gs, _cr) {
-		if (!ui) return;
 
-		var ns = tp === 'default' ? _cr.namespace : gs[tp], x = _cr.namespace, s, c;
-		if (!ns) return false;
+	function create_group(type, ui, p, d, gs, master) {
+		var ns = gs[type]||false, c, u;
 
 		if (c = ns[ui]) {
-			s = {
-				name: ui,
-				type: tp,
-				document: d,
-				namespace: ns,
-				varclass: c
-			};
-
 			if (typeof c === 'function') {
-				_cr.namespace = ns;
-
 				if (!c.prototype.nodeType) c.prototype.nodeType = -1;
-				ui = new c(_cr, pr, s);
-
-				_cr.namespace = x;
-			}
-			else {
-				return false;
+				ui = new c(master, p ); //, {name: ui, type: tp, document: d, uiclass: c}
+				return ui;
 			};
-
-			return ui;
 		};
 	};
 
-	function tmpl(nn, pr) {
+	// эксперементальный функционал. 
+	function tmpl(nn, p) {
 		switch (typeof nn) {
 			case 'function':
 				if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-				return new nn(this, pr, false);
+				return new nn(this, p);
 
-			case 'string':
-				break;
-			default:
-				return;
-		}
+			case 'string': break;
+			default: return;
+		};
 
-		var x = nn.indexOf(':'), nx = this.namespace, ns = x > 0 ? this.global[nn.substring(0, x)] : nx;
-		if (x === -1 || !ns) return;
-		nn = ns[x = nn.substring(++x)];
+		var x = nn.indexOf(':'), ns = this.global[nn.substring(0, x)], c;
+		if (!ns) return;
 
-		if (typeof nn === 'function') {
-			this.namespace = ns;
+		c = ns[nn.substring(x+1)];
 
-			if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-			nn = new nn(this, pr, false);
-
-			this.namespace = nx;
-			if (nn) return nn;
+		if (typeof c === 'function') {
+			if (!c.prototype.nodeType) c.prototype.nodeType = -1;
+			if (nn = new c(this, p)) {
+				return nn;
+			};
 		};
 	};
 
 
-	// 
 	function map(a, func) {
-		if (typeof a === 'number' && a === a) {
-			a = {
-				length: a
-			};
+		if (!a || typeof func !== 'function') {
+			return;
 		};
-		
-		if (typeof func !== 'function') return;
 
-		if (!a || !a.length) {
-			if (typeof a !== 'number' || !(x > 0)) {
-				return
-			};
-
+		if (typeof a === 'number') {
 			a = {length: a};
 		};
-		
-
 
 		var l = a.length
-		, i = 0
+		, i = 1
 		, iend = l - 1
 		, m = []
-		, e = {
-			first: true,
-			last: false,
-			list: a
-		}
+		, e = {first: true, last: false, list: a, index: 0} //, master: this
 		, v, u
 		;
 
+
+		if (0 < l) {
+			v = func(a[0], e, this);
+			if (v || v === 0 || v === '') {
+				m.push(v)
+			};
+
+			e.first = false;
+		};
 
 		for (; i < l; i++) {
 			if (i === iend) e.last = true;
 			e.index = i;
 
-			v = func(this, a[i], e);
-
+			v = func(a[i], e, this);
 			if (v || v === 0 || v === '') {
 				m.push(v)
 			};
-
-			if (!i) e.first = false;
-		}
+		};
 
 		return m;
 	};
 
-
+	// совместимость с прошлым
 	function style_set(n, pr) {
 		var st = n.style, x, a, und;
 
