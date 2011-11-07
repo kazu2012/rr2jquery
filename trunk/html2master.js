@@ -44,7 +44,11 @@ document.body.innerHTML = "";
 			};
 
 		//'id','className',
-		a = ['href','title','src','cellPadding','cellSpacing','border', 'colSpan', 'rowSpan', 'scope','width','height','type', 'name', 'value', 'method', 'action', ''];
+		a = ['href','title','src','cellPadding','cellSpacing','border', 'colSpan', 'rowSpan', 'scope','width','height','type', 'name', 'value', 'method', 'action', 'rel', 'alt'];
+		H = {'cellPadding': 'cellpadding', 'cellSpacing': 'cellspacing', 'colSpan': 'colspan'};
+
+		if (H[x]) x = H[x];
+
 		i = 0;
 		while(x = a[i++]) {
 			if (tag == 'li' && x=='value') continue;
@@ -55,6 +59,8 @@ document.body.innerHTML = "";
 
 			v = n[x];
 			if ((x == 'colSpan' || x == 'rowSpan') && v == 1) continue;
+
+			if (H[x]) x = H[x];
 
 			if (v || v===0) {
 				if (!tx) {tx = "{"} else tx += ", ";
@@ -79,6 +85,7 @@ document.body.innerHTML = "";
 		if (v = trimClassName(n.className)) {
 			tag+='.'+v;
 			};
+
 		if (v = trim(n.id)) {
 			tag+='#'+v;
 			};
