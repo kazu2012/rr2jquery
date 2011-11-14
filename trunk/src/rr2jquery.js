@@ -191,7 +191,7 @@ jQuery.extend({
 
 	var u, badIE = '\v'=='v' && document.createElement('span').style.opacity === u; // badIE = IE<9
 
-	// по умолчанию все все параметры вставляются через nn.setAttribute(x, v);
+	// по умолчанию все параметры вставляются через nn.setAttribute(x, v);
 	// за исключением приведенного списка и параметров начинаюшиеся с символа "_" пример {_xxxx: 333}
 	var attr_to_param = { constructor: null
 		, 'name': badIE ? null : 'name'
@@ -245,8 +245,8 @@ jQuery.extend({
 
 			if (q && !q.nodeType && typeof q == 'object') {
 				if (q.length === u || !isArray(q)) {
-					append_index = 2;
 					params = q;
+					append_index = 2; // потомки с 3-го аргумента
 				};
 			};
 
@@ -348,7 +348,7 @@ jQuery.extend({
 								if (v) id = v;
 								break;
 
-							case 'class': case 'css': case 'className':
+							case 'class': case 'css':
 								if (v) css = css ? css + ' ' + v : v;
 								break;
 
@@ -359,7 +359,7 @@ jQuery.extend({
 							case 'parent': case 'before': case 'after':
 								break;
 
-							case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit':
+							case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit': case 'onresize': case 'onscroll':
 								if (typeof v === 'function') {
 									nn[x] = v;
 								} else {
@@ -408,10 +408,13 @@ jQuery.extend({
 
 		master.text = text;
 		master.html = html;
+		master.map = map;
+		master.set = set;
 
-		master.clone = clone;
-		master.tmpl = tmpl;
-		master.map = master.forEach = map;
+		master.clone = clone; // отказ от контекста делает ее почти ненужным. Позволяет сделать клон мастера для другого докумета.
+		master.tmpl = tmpl; // позволяет создать обьект "группы" с явным указанием параметра вторым ургументом. // нужно доработать идиологию
+
+		master.forEach = map; // для совместимости. будет удален
 
 		return master;
 	};
@@ -581,6 +584,53 @@ jQuery.extend({
 		};
 	};
 
+	// установка атрибутов у элемента. без ограничений
+	function set(nn, p) {
+		if (!nn || nn.nodeType !== 1) return; // 
+		var u, x, v, i;
+
+		for (x in params) {
+			v = params[x];
+
+			if (v === u || v === null) continue;
+
+			if (i = attr_to_param[x]) {
+				nn[i] = v;
+				continue;
+			};
+
+			switch (x) {
+				case 'id':
+					nn.id = String(v);
+					break;
+
+				case 'class': case 'css':
+					nn.className = String(v);
+					break;
+
+				case 'style':
+					if (i = nn.style) i.cssText = String(v);
+					break;
+
+				case 'onclick': case 'onmousedown': case 'onmouseup': case 'onmousemove': case 'onchange': case 'onsubmit': case 'onresize': case 'onscroll':
+					if (typeof v === 'function') {
+						nn[x] = v;
+					} else {
+						nn.setAttribute(x, v);
+					};
+					break;
+
+				default:
+					if (x.indexOf('_') === 0) {
+						nn[x] = v; 
+					} else {
+						nn.setAttribute(x, v);
+					};
+			};
+		};
+		
+	};
+
 	// эксперементальный функционал. 
 	function tmpl(nn, p) {
 		switch (typeof nn) {
@@ -646,7 +696,7 @@ jQuery.extend({
 		return m;
 	};
 
-	// толи полезно толи нет
+	// думаю оставить или нет. ну удаляю из за совместимости
 	function style_set(n, pr) {
 		var st = n.style, x, a, und;
 
