@@ -271,7 +271,7 @@ jQuery.extend({
 					if (i !== 'string') {
 						if (i === 'function') {
 							if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-							nn = new nn(this, params, false);
+							nn = new nn(master, params, false);
 
 							i = nn.nodeType;
 							is_group = i < 0;
