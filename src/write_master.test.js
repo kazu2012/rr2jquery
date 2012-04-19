@@ -43,7 +43,7 @@ var rr = this.rr || (this.rr = {});
 						case 'string': break;
 						case 'function':
 							if (!nn.prototype.nodeType) nn.prototype.nodeType = -1;
-							nn = new nn(this, pr, false);
+							nn = new nn(master, pr, false);
 						default:
 							if (!nn || !nn.nodeType) return; // подсунили чтота нето
 							is_group = nn.nodeType < 0; // кешируем флажок что это обьект не HTMLElement
